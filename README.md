@@ -23,7 +23,7 @@
 
 ## 这里存放哪些内容？
 
-我会在为知笔记上存放所有需要文字记录的东西。在 [blog.csdn](http://blog.csdn.net/candcplusplus) 的博客上发布所有可以分享的东西。在这里会发布我特别想分享给小伙伴的东西。这里的内容会同步到 [blog.csdn](http://blog.csdn.net/candcplusplus) ，同步到为知笔记。所以内容数量上是：为知笔记 >  [blog.csdn](http://blog.csdn.net/candcplusplus)  >本仓库。内容平均质量上是 本仓库 >  [blog.csdn](http://blog.csdn.net/candcplusplus)  > 为知笔记。具体谋篇文章的更新速度是：本仓库 > 为知笔记 >  [blog.csdn](http://blog.csdn.net/candcplusplus)。
+我会在为知笔记上存放所有需要文字记录的东西。在 [blog.csdn](http://blog.csdn.net/candcplusplus) 的博客上发布所有可以分享的东西。在这里会发布我特别想分享给小伙伴的东西。这里的内容会同步到 [blog.csdn](http://blog.csdn.net/candcplusplus) ，同步到为知笔记。所以内容数量上是：为知笔记 >  [blog.csdn](http://blog.csdn.net/candcplusplus)  >本仓库。内容平均质量上是：本仓库 >  [blog.csdn](http://blog.csdn.net/candcplusplus)  > 为知笔记。文章的更新速度是：本仓库 > 为知笔记 >  [blog.csdn](http://blog.csdn.net/candcplusplus)。
 
 ## 内容组织
 
