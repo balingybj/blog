@@ -69,7 +69,7 @@ RUN apt-get update && apt-get install -y \
 
 你可以给镜像添加标签来帮助组织镜像、记录许可信息、辅助自动化构建，或者因为其他的原因。每个标签一行，由`LABEL`开头加上一个或多个标签对。下面的示例展示了各种不同的可能格式。注释内容是解释。
 
->   注意：如果你的字符串中包含空格，将字符串放入引号中或者对空格使用转义。如果字符串内容本身就包含引号，必须使用转义。
+>   注意：如果你的字符串中包含空格，将字符串放入引号中或者对空格使用转义。如果字符串内容本身就包含引号，必须对引号使用转义。
 
 ````
 # Set one or more individual labels
@@ -89,7 +89,7 @@ LABEL vendor=ACME\ Incorporated \
       com.example.release-date="2015-02-12"
 ````
 
-关于标签可以接受的键和值参考 [Understanding object labels](https://docs.docker.com/engine/userguide/labels-custom-metadata/)。关于查询标签信息，参考 [Managing labels on objects](https://docs.docker.com/engine/userguide/labels-custom-metadata/#managing-labels-on-objects)。
+关于标签可以接受的键值对，参考 [Understanding object labels](https://docs.docker.com/engine/userguide/labels-custom-metadata/)。关于查询标签信息，参考 [Managing labels on objects](https://docs.docker.com/engine/userguide/labels-custom-metadata/#managing-labels-on-objects)。
 
 ### RUN
 
