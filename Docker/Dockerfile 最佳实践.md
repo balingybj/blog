@@ -65,6 +65,32 @@ RUN apt-get update && apt-get install -y \
 
 只要有可能，请使用当前官方仓库作为构建你镜像的基础。我们推荐使用[Debian image](https://hub.docker.com/_/debian/)，因为它被严格控制并保持最小尺寸（当前小于 150 mb），但仍然是一个完整的发行版。
 
+### LABEL
+
+你可以给镜像添加标签来帮助组织镜像、记录许可信息、辅助自动化构建，或者因为其他的原因。每个标签一行，由`LABEL`开头加上一个或多个标签对。下面的示例展示了各种不同的可能格式。注释内容是解释。
+
+>   注意：如果你的字符串中包含空格，将字符串放入引号中或者对空格使用转义。如果字符串内容本身就包含引号，必须使用转义。
+
+````
+# Set one or more individual labels
+LABEL com.example.version="0.0.1-beta"
+LABEL vendor="ACME Incorporated"
+LABEL com.example.release-date="2015-02-12"
+LABEL com.example.version.is-production=""
+
+# Set multiple labels on one line
+LABEL com.example.version="0.0.1-beta" com.example.release-date="2015-02-12"
+
+# Set multiple labels at once, using line-continuation characters to break long lines
+LABEL vendor=ACME\ Incorporated \
+      com.example.is-beta= \
+      com.example.is-production="" \
+      com.example.version="0.0.1-beta" \
+      com.example.release-date="2015-02-12"
+````
+
+关于标签可以接受的键和值参考 [Understanding object labels](https://docs.docker.com/engine/userguide/labels-custom-metadata/)。关于查询标签信息，参考 [Managing labels on objects](https://docs.docker.com/engine/userguide/labels-custom-metadata/#managing-labels-on-objects)。
+
 ### RUN
 
 一如往常，保持你的 `Dockerfile` 文件更具可读性，可理解性，以及可维护性，将长的或复杂的`RUN`声明用反斜杠分割成多行。
