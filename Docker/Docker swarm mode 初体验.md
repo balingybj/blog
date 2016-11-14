@@ -1,4 +1,4 @@
-# Docker swarm 初体验
+# Docker swarm mode 初体验
 
 本教程将介绍 Docker Engine Swarm 模式。在开始之前，你可能需要先熟悉一下关于 Docker Swarm 的[几个关键概念](https://docs.docker.com/engine/swarm/key-concepts/)。
 
