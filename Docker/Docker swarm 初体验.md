@@ -261,9 +261,9 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 1f2572bd690e        alpine:3.4          "ping baidu.com"    28 minutes ago      Up 28 minutes                           helloworld.1.ezqjxoewzlv6bgoz70rk85xxp
 ```
 
-## 扩展服务的数量
+## 伸缩服务
 
-### 扩展服务的规模
+### 伸缩服务的任务数量
 
 在管理节点上
 
@@ -272,7 +272,7 @@ $ docker service scale helloworld=5
 helloworld scaled to 5
 ```
 
-我们将服务的数量扩展到5。
+我们将服务的数量伸缩到5。
 
 ### 查看服务列表
 
@@ -593,7 +593,7 @@ Status:
 
 一个处于可用性为`Active`的节点在以下情况下可以接收到新任务：
 
--   当一个服务在扩展规模时
+-   当一个服务在伸缩规模时
 -   滚动更新时
 -   当你把其他某个节点的可用性设为`Drain`时
 -   当某个任务在另外某个`Active`节点上启动失败时
