@@ -1,6 +1,6 @@
 # Dockerfile 最佳实践
 
-本文是 Docker 官方文档 docs/archive:v1.1 中 Best practices for writing Dockerfiles 的理解和翻译。包含了 Docker 官方对编写 Dockerfile 的最佳做法和建议。这些建议可以让你写出易用高效的 Dockerfile。Docker 官方强烈建议你遵从这些建议（实际上，如果你是在创建官方镜像，你必须得遵从这些建议）。
+本文是 Docker 官方文档 docs/archive:v1.1 中 [Best practices for writing Dockerfiles](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/) 的理解和翻译。包含了 Docker 官方对编写 Dockerfile 的最佳做法和建议。这些建议可以让你写出易用高效的 Dockerfile。Docker 官方强烈建议你遵从这些建议（实际上，如果你是在创建官方镜像，你必须得遵从这些建议）。
 
 阅读该文档需要你已经会通过`Dockerfile`构建镜像，并了解`Dockerfile`中各条指令的用途。
 
