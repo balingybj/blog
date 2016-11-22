@@ -42,7 +42,7 @@ deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-security main restricted
 #### 2.1 使用阿里云镜像源安装（推荐）
 
 ```shell
-$ curl -sSL http://acs-public-mirror.oss-cn-hangzhou.aliyuncs.com/docker-engine/internet | sudo sh
+curl -sSL http://acs-public-mirror.oss-cn-hangzhou.aliyuncs.com/docker-engine/internet | sh -
 ```
 
 详情参考阿里云的[帮助页面](http://mirrors.aliyun.com/help/docker-engine)。
