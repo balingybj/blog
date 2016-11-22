@@ -6,7 +6,7 @@
 
 ### 1. 修改 APT  源
 
-Docker 的安装过程需要执行`apt update`，使用默认的 apt 源会很慢。所以一般使用国内的镜像源。我电的镜像源长期不稳定，推荐使用中科大的源。论速度和稳定，我只服中科大。
+Docker 的安装过程需要执行`apt update`，使用默认的 apt 源会很慢。所以一般使用国内的镜像源。我电的镜像源长期不稳定，推荐使用清华、阿里、中科大的源。这里用清华源举例。
 
 ```shell
 $ sudo gedit /etc/apt/sources.list
@@ -15,19 +15,18 @@ $ sudo gedit /etc/apt/sources.list
 将里面的内容替换为：
 
 `````shell
-deb http://mirrors.ustc.edu.cn/ubuntu/ xenial main restricted universe multiverse
-deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-security main restricted universe multiverse
-deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-updates main restricted universe multiverse
-deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-proposed main restricted universe multiverse
-deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-backports main restricted universe multiverse
-deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial main restricted universe multiverse
-deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial-security main restricted universe multiverse
-deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial-updates main restricted universe multiverse
-deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial-proposed main restricted universe multiverse
-deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial-backports main restricted universe multiverse
+# 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial main restricted universe multiverse
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial main main restricted universe multiverse
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-updates main restricted universe multiverse
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-updates main restricted universe multiverse
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-backports main restricted universe multiverse
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-backports main restricted universe multiverse
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-security main restricted universe multiverse
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-security main restricted universe multiverse
 `````
 
-我这里的源对应的是 Ubuntu 16.04 的版本。如果你使用的是其他版本，请参考中科大的镜像[使用帮助](https://lug.ustc.edu.cn/wiki/mirrors/help/ubuntu)。
+我这里的源对应的是 Ubuntu 16.04 的版本。如果你使用的是其他版本，请参考清华源的镜像[使用帮助](https://mirrors.tuna.tsinghua.edu.cn/)。
 
 ### 2. 安装
 
