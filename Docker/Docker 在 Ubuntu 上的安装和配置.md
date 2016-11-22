@@ -15,7 +15,7 @@ $ sudo gedit /etc/apt/sources.list
 将里面的内容替换为：
 
 `````shell
-eb http://mirrors.ustc.edu.cn/ubuntu/ xenial main restricted universe multiverse
+deb http://mirrors.ustc.edu.cn/ubuntu/ xenial main restricted universe multiverse
 deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-security main restricted universe multiverse
 deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-updates main restricted universe multiverse
 deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-proposed main restricted universe multiverse
