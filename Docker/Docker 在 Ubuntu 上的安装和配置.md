@@ -74,7 +74,7 @@ $ sudo usermod -aG docker ${USER}
 
 #### 重新登录系统
 
-上面的修改只有重新登录系统后才能生效。所以先 logout 再 loginin。
+上面的修改只有重新登录系统后才能生效。所以先 logout 再 login。
 
 #### 验证
 
