@@ -167,8 +167,203 @@ Status: Downloaded newer image for 192.168.59.137:5000/busybox:1.25.1-musl
 
 以后在每台需要访问该 registry 服务的 Docker 主机上都需要这么修改。
 
+## Registry 配置 HTTPS
+
+### 使用自签名证书
+
+#### 针对域名签证
+
+如果你的 registry 服务有域名，或者你可以自定义一个域名，在每台需要访问该 registry 服务的 Docker 主机上在 hosts 文件中添加自定义域名到该 registry 服务主机 IP 的映射。
+
+##### step 1: 生成自签名证书
+
+```shell
+$ mkdir certs
+$ openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key  -x509 -days 365 -out certs/domain.crt
+```
+
+命令会进入交互式模式，你需要输入国家、省、市、组织名、域名：
+
+```shell
+Country Name (2 letter code) [AU]:CN
+State or Province Name (full name) [Some-State]:Shangxi
+Locality Name (eg, city) []:Xian 
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:sse lab
+Organizational Unit Name (eg, section) []:sse lab
+Common Name (e.g. server FQDN or YOUR name) []:example.com
+Email Address []:*****@**.com
+```
+
+填写 Common Name 时要特别注意，要填写正确的域名。这里假设域名为 example.com 执行完毕后会在 certs 目录下生成私钥文件 domain.key、证书文件 domain.crt。
+
+##### step 2: 启动支持 HTTPS 访问的 registry 服务
+
+确保掉前面启动的 registry 服务已经停止和删除。
+
+```shell
+$ docker run -d -p 5000:5000 --restart=always --name registry -v `pwd`/certs:/certs \
+    -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
+    -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key registry:2.5.1
+```
+
+该命令启动了一个 registry 容器，并通过数据卷将证书和私钥传进了容器，并通过环境变量指定了其路径。
+
+##### step3: 将证书文件复制到每台需要访问 registry 服务的客户机
+
+由于是自签名证书，我们需要将生成的证书文件给客户机，客户机才能信任 registry 服务。
+
+准备好前面生成的 domain.crt，在每台需要访问服务的 docker 主机上：
+
+```shell
+$ sudo cp domain.crt /etc/docker/certs.d/example.com:5000/ca.crt
+```
+
+重启 docker 服务
+
+```shell
+$ sudo service docker restart
+```
+
+如果你使用的自定义域名，你还需要在 hosts 文件中手动加入域名到 IP 的映射，比如我的 registry 服务的 IP 为 192.168.59.137，自定义的域名为 example.com。 我需要在`/etc/hosts`文件中加入一行`192.168.59.137  example.com`。
+
+##### step 4: 验证
+
+在 docker 客户机上：
+
+push 验证
+
+```shell
+
+
+$ docker pull busybox:1.25.1-musl
+$ docker tag busybox:1.25.1-musl example.com:5000/busybox:1.25.1-musl
+busybox:1.25.1-musl
+$ docker push example.com:5000/busybox:1.25.1-musl 
+The push refers to a repository [example:5000/busybox]
+981f3d18e054: Pushed 
+1.25.1-musl: digest: sha256:46634e32e559271b8e18b7f1b21d981da4cd63ed8d36fbdc35c0b56464238a0c size: 527
+```
+
+API 验证：
+
+```shell
+$ curl -k https://example:5000/v2/_catalog
+{"repositories":["busybox"]}
+~$ curl -k https://192.168.59.137:5000/v2/busybox/tags/list
+{"name":"busybox","tags":["1.25.1-musl"]}
+```
+
+看到类似的输出就说明成功了。我每次都选择 busybox 的镜像做实验，因为 busybox 是我系统上最小的镜像，你可以选择更小的官方提供的 helloworld 镜像做实验。
+
+#### 针对 IP 地址做签证
+
+如果没有购买域名，又觉得自定义域名太麻烦（需要修改每台客户机的 hosts 文件），喜欢直接用 IP 地址来访问。我们可以针对 IP 做签证。只是生成证书的地方多一个操作。假设 registry 服务的 IP 为 192.168.59.137。
+
+##### step 0：修改 openssl 的配置文件
+
+编辑`/etc/ssl/openssl.cnf`，搜索`v3_ca`，在`[  v3_ca  ]`下面加入下面这行：
+
+```
+subjectAltName = IP:192.168.59.137
+```
+
+注意将 192.168.59.137 替换为你 registry 服务的 IP。
+
+##### step 1: 生成自签名证书
+
+```shell
+$ mkdir certs
+$ openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key  -x509 -days 365 -out certs/domain.crt
+```
+
+命令会进入交互式模式，你需要输入国家、省、市、组织名、域名：
+
+```shell
+Country Name (2 letter code) [AU]:CN
+State or Province Name (full name) [Some-State]:Shangxi
+Locality Name (eg, city) []:Xian 
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:sse lab
+Organizational Unit Name (eg, section) []:sse lab
+Common Name (e.g. server FQDN or YOUR name) []:192.168.59.137
+Email Address []:*****@**.com
+```
+
+执行完毕后会在 certs 目录下生成私钥文件 domain.key、证书文件 domain.crt。
+
+##### step 2: 验证证书
+
+```shell
+$ openssl x509 -text -in certs/domain.crt -noout | grep IP
+                IP Address:192.168.59.137
+```
+
+或者直接运行`openssl x509 -text -in certs/domain.crt -noout`，在输出信息中`X509V3 extensions`后面看到：
+
+```
+X509v3 Subject Alternative Name: 
+                IP Address:192.168.59.137
+```
+
+##### step 3: 启动支持 HTTPS 访问的 registry 服务
+
+确保掉前面启动的 registry 服务已经停止和删除。
+
+```shell
+$ docker run -d -p 5000:5000 --restart=always --name registry -v `pwd`/certs:/certs \
+    -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
+    -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key registry:2.5.1
+```
+
+该命令启动了一个 registry 容器，并通过数据卷将证书和私钥传进了容器，并通过环境变量指定了其路径。
+
+##### step4: 将证书文件复制到每台需要访问 registry 服务的客户机
+
+由于是自签名证书，我们需要将生成的证书文件给客户机，客户机才能信任 registry 服务。
+
+准备好前面生成的 domain.crt，在每台需要访问服务的 docker 主机上：
+
+```shell
+$ sudo cp domain.crt /etc/docker/certs.d/example.com:5000/ca.crt
+```
+
+重启 docker 服务
+
+```shell
+$ sudo service docker restart
+```
+
+如果你使用的自定义域名，你还需要在 hosts 文件中手动加入域名到 IP 的映射，比如我的 registry 服务的 IP 为 192.168.59.137，自定义的域名为 example.com。 我需要在`/etc/hosts`文件中加入一行`192.168.59.137  example.com`。
+
+##### step 4: 验证
+
+在 docker 客户机上：
+
+push 验证
+
+```shell
+
+$ docker pull busybox:1.25.1-musl
+$ docker tag busybox:1.25.1-musl example.com:5000/busybox:1.25.1-musl
+busybox:1.25.1-musl
+$ docker push example.com:5000/busybox:1.25.1-musl 
+The push refers to a repository [example:5000/busybox]
+981f3d18e054: Pushed 
+1.25.1-musl: digest: sha256:46634e32e559271b8e18b7f1b21d981da4cd63ed8d36fbdc35c0b56464238a0c size: 527
+```
+
+API 验证：
+
+```shell
+$ curl -k https://example:5000/v2/_catalog
+{"repositories":["busybox"]}
+~$ curl -k https://192.168.59.137:5000/v2/busybox/tags/list
+{"name":"busybox","tags":["1.25.1-musl"]}
+```
+
+看到类似的输出就说明成功了。我每次都选择 busybox 的镜像做实验，因为 busybox 是我系统上最小的镜像，你可以选择更小的官方提供的 helloworld 镜像做实验。
+
 ## todo
 
-给 registry 配置自签名的 HTTPS。
-
 将 registry 配置成 hub 加速器。
+
+弄清楚HTTPS 中证书和私钥的原理
