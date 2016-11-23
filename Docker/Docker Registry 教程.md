@@ -267,7 +267,7 @@ $ curl -k https://example:5000/v2/_catalog
 subjectAltName = IP:192.168.59.137
 ```
 
-注意将 192.168.59.137 替换为你 registry 服务的 IP。
+注意将 192.168.59.137 替换为你 registry 服务的 IP。这一步很关键，网上很多遇到的报错：`registry endpoint...x509: cannot validate certificate for ... because it doesn't contain any IP SANs`都是这一步没做好。
 
 ##### step 1: 生成自签名证书
 
