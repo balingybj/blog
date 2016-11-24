@@ -362,8 +362,69 @@ $ curl -k https://example:5000/v2/_catalog
 
 看到类似的输出就说明成功了。我每次都选择 busybox 的镜像做实验，因为 busybox 是我系统上最小的镜像，你可以选择更小的官方提供的 helloworld 镜像做实验。
 
+## 配置 Registry cache（加速器）
+
+如果你所在的实验室或公司需要运行多个 Docker 实例，每个 Docker 实例都要重复拉取一些镜像。介于国内访问国外的网速，拉取一些大的镜像会特别耗时，而且很多学校网络流量都是收费的。你可以用 Registry 搭建一个本地 Registry cache，这样镜像只需要去外网拉取一次，后面的重复拉取都使用本地缓存，大大加速了镜像拉取过程。
+
+### 可选方案
+
+如果要使用到的镜像集合是确定的，或者要用到的镜像都是在本地生成的，完全没用到 hub。你可以在本地部署一个 Registry 私有仓库，将要用到的镜像都放到该私有仓库中，这样更简单。
+
+你还可以使用国内几个公司提供的免费 Hub 加速服务。这样更简单，网速还可以接受，但是不能节约网络流量。
+
+### 遗憾的是
+
+目前只能缓存官方的 Hub，不支持其他的私有 registry。
+
+### Registry  cache 模式的工作原理
+
+当你第一个从本地 registry cache 请求某个镜像时，该镜像在 registry cache 上还不存在，它会去 Docker hub 上拉取该镜像，缓存到本地，然后发给你。后面从该registry cache请求这个镜像，registry cache 直接返回缓存的副本。
+
+#### 如果 Hub 上对应的镜像改变了呢？
+
+当用户用到 tag 参数拉取镜像时，registry 会去 Hub 上查询该镜像的信息，如果 Hub 上该镜像的版本比本地的版本更新，就从 Hub 上拉取该镜像，更新本地缓存，然后发给用户。
+
+#### 对磁盘的使用
+
+如果使用频率较高，旧的数据可以保存在缓存中。当 Registry 处于cache 模式运行时，它会定期清除磁盘上旧的内容以节约磁盘空间。如果后面再请求已清除的内容，registry 会再次去远程 Hub 获取内容并缓存。
+
+为了获得最好的性能、保证正确性，Registry cache 应该使用`filesystem`做存储驱动。
+
+### 开始部署
+
+还是像前面一样，利用官方提供 Registry 镜像运行一个容器。Registry 容器的配置和启动不再赘述。
+
+#### 配置 Registry cache
+
+要想 Registry 以 cache 的模式运行，必须在配置文件提供`proxy`，在`proxy`部分指定`remoteurl`。
+
+如果需要访问某个 Hub 账户的私有仓库，必须提供该用户的 username 和 password。
+
+```
+proxy:
+  remoteurl: https://registry-1.docker.io
+  username: [username]
+  password: [password]
+```
+
+>   警告：如果你提供了某个用户的 username 和 password，所有能访问该 registry cache 也能通过 cache 访问该用户在 Hub 上的私有资源。
+
+>   警告：为了让调度器可以清理掉旧的数据，registry 配置中必须允许 delete。参考[Registry Configuration Reference](https://docs.docker.com/registry/configuration/)。
+
+然后启动 registry。
+
+#### 配置 Docker daemon
+
+在每台需要使用 registry cache 的主机上，编辑 Docker daemon 的配置文件`/etc/docker/daemon.json`，在其中添加一条:
+
+```json
+"registry-mirrors": ["https://159.128.59.137:5000"]
+```
+
+我的 registry cache 的 IP 为 159.128.59.137，记得在你的环境下替换成你 registry 服务的 IP。
+
 ## todo
 
-将 registry 配置成 hub 加速器。
-
 弄清楚HTTPS 中证书和私钥的原理
+
+Registry 配置
