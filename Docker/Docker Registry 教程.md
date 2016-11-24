@@ -423,6 +423,14 @@ proxy:
 
 我的 registry cache 的 IP 为 159.128.59.137，记得在你的环境下替换成你 registry 服务的 IP。
 
+重启 Docker daemon：
+
+```shell
+$ sudo service docker restart
+```
+
+
+
 ## todo
 
 弄清楚HTTPS 中证书和私钥的原理
