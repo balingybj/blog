@@ -14,7 +14,7 @@ $ sudo gedit /etc/apt/sources.list
 
 将里面的内容替换为：
 
-`````shell
+```shell
 # 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释
 deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial main restricted universe multiverse
 # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial main main restricted universe multiverse
@@ -24,7 +24,7 @@ deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-backports main restricte
 # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-backports main restricted universe multiverse
 deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-security main restricted universe multiverse
 # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-security main restricted universe multiverse
-`````
+```
 
 我这里的源对应的是 Ubuntu 16.04 的版本。如果你使用的是其他版本，请参考清华源的镜像[使用帮助](https://mirrors.tuna.tsinghua.edu.cn/)。
 
