@@ -71,7 +71,7 @@ RUN apt-get update && apt-get install -y \
 
 >   注意：如果你的字符串中包含空格，将字符串放入引号中或者对空格使用转义。如果字符串内容本身就包含引号，必须对引号使用转义。
 
-````
+```
 # Set one or more individual labels
 LABEL com.example.version="0.0.1-beta"
 LABEL vendor="ACME Incorporated"
@@ -87,7 +87,7 @@ LABEL vendor=ACME\ Incorporated \
       com.example.is-production="" \
       com.example.version="0.0.1-beta" \
       com.example.release-date="2015-02-12"
-````
+```
 
 关于标签可以接受的键值对，参考 [Understanding object labels](https://docs.docker.com/engine/userguide/labels-custom-metadata/)。关于查询标签信息，参考 [Managing labels on objects](https://docs.docker.com/engine/userguide/labels-custom-metadata/#managing-labels-on-objects)。
 
