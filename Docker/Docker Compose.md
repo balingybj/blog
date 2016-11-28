@@ -372,6 +372,23 @@ PYTHON_PIP_VERSION=8.1.2
 HOME=/root
 ```
 
+根据本人目前的观察，该命令会从服务对应的镜像创建一个容器，然后执行给定的命令。退出后不删除容器。
+
+#### 在运行的容器上执行一条命令
+
+```shell
+~/composetest2$ docker-compose exec web env
+PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+HOSTNAME=fff0d5d5fe97
+LANG=C.UTF-8
+GPG_KEY=C01E1CAD5EA2C4F0B8E3571504C367C218ADD4FF
+PYTHON_VERSION=2.7.12
+PYTHON_PIP_VERSION=8.1.2
+HOME=/root
+```
+
+这条命令效果和`docker-compose run web env`差不多，但不同的是，该命令不会创建新的容器，而是在正运行的容器上执行命令。
+
 #### 停止服务
 
 前面我用前台方式启动应用的所有服务，用`ctrl c`就能停止所有服务。而这次我们用后台方式启动的服务得用`docker-compose stop`停止。
