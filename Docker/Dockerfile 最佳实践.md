@@ -1,6 +1,6 @@
 # Dockerfile 最佳实践
 
-本文是 Docker 官方文档 docs/archive:v1.1 中 [Best practices for writing Dockerfiles](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/) 的理解和翻译。包含了 Docker 官方对编写 Dockerfile 的最佳做法和建议。这些建议可以让你写出易用高效的 Dockerfile。Docker 官方强烈建议你遵从这些建议（实际上，如果你是在创建官方镜像，你必须得遵从这些建议）。
+本文是 Docker 官方文档 docs/archive:v1.1 中 [Best practices for writing Dockerfiles](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/) 的理解和翻译。包含了 Docker 官方对编写 Dockerfile 的最佳实践和建议。这些建议是为了让你写出高效易用的 Dockerfile。Docker 官方强烈建议你遵从这些建议（实际上，如果你是在创建官方镜像，你必须得遵从这些建议）。
 
 阅读该文档需要你已经会通过`Dockerfile`构建镜像，并了解`Dockerfile`中各条指令的用途。
 
@@ -8,7 +8,7 @@
 
 ### 容器应该是短暂的
 
-通过 Dockerfile 定义的镜像所产生的容器应该尽可能短暂（生命周期短）。“短暂”，意味着可以停止和销毁容器，并且创建一个新容器并放部署好所需的设置和配置工作量应该是极小的。
+通过 Dockerfile 定义的镜像所产生的容器应该尽可能短暂（生命周期短）。“短暂”，意味着可以停止和销毁容器，并且创建一个新容器并部署好所需的设置和配置工作量应该是极小的。
 
 ### 使用 .dockerignore 文件
 
