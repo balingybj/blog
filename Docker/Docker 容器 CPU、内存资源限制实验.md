@@ -87,7 +87,7 @@ todo
 >
 >   step 2：更新 GRUB，即执行`$ sudo update-grub`
 >
->   step 3: 重新系统。
+>   step 3: 重启系统。
 
 ### 准备测试程序
 
