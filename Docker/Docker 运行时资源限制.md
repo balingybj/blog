@@ -138,8 +138,6 @@ $ docker run -it --kernel-memory 50M ubuntu:16.04 /bin/bash
 
 没用设置用户内存限制，所以容器中的进程可以使用尽可能多的内存，但是最多能使用 50M 核心内存。
 
-
-
 ### Swappiness
 
 默认情况下，容器的内核可以交换出一定比例的匿名页。`--memory-swappiness`就是用来设置这个比例的。`--memory-swappiness`可以设置为从 0 到 100。0 表示关闭匿名页面交换。100 表示所有的匿名页都可以交换。默认情况下，如果不适用`--memory-swappiness`，则该值从父进程继承而来。
@@ -151,4 +149,99 @@ $ docker run -it --memory-swappiness=0 ubuntu:16.04 /bin/bash
 ```
 
 将`--memory-swappiness`设置为 0 可以保持容器的工作集，避免交换代理的性能损失。
+
+## CPU 限制
+
+### 概述
+
+Docker 的资源限制和隔离完全基于 Linux cgroups。对 CPU 资源的限制方式也和 cgroups 相同。Docker 提供的 CPU 资源限制选项可以在多核系统上限制容器能利用哪些 vCPU。而对容器最多能使用的 CPU 时间有两种限制方式：一是有多个 CPU 密集型的容器竞争 CPU 时，设置各个容器能使用的 CPU 时间相对比例。二是以绝对的方式设置容器能使用的 CPU 时间。
+
+### CPU 限制相关参数
+
+`docker run`命令和 CPU 限制相关的所有选项如下：
+
+| 选项                    | 描述                             |
+| --------------------- | ------------------------------ |
+| `--cpuset-cpus=""`    | 允许使用的 CPU 集，值可以为 0-3,0,1       |
+| `-c`,`--cpu-shares=0` | CPU 共享权值（相对权重）                 |
+| `cpu-period=0`        | 限制 CPU CFS 的周期                 |
+| `--cpu-quota=0`       | 限制 CPU CFS 配额                  |
+| `--cpuset-mems=""`    | 允许在上执行的内存节点（MEMs），只对 NUMA 系统有效 |
+
+其中`--cpuset-cpus`用于设置容器可以使用的 vCPU 核。`-c`,`--cpu-shares`用于设置多个容器竞争 CPU 时，各个容器相对能分配到的 CPU 时间。`--cpu-period`和`--cpu-quata`用于绝对设置容器能使用 CPU 时间。
+
+`--cpuset-mems`暂用不上，这里不谈。
+
+### CPU 共享权值
+
+默认情况下，所有的容器得到同等比例的 CPU 周期。这个比例可以通过修改容器的 CPU 共享权值来修改。每个容器的 CPU 共享权重都是相对于所有容器的总权值而言的。
+
+容器默认的权值为 1024，使用`-c`或`--cpu-shares`选项可以设置权值。如果将其设置为 0，系统将忽略该值并使用默认的 1024。
+
+这个比例只有在 CPU 密集型的任务执行时才有用。在四核的系统上，假设有四个当进程的容器，它们都能各自使用一个核的 100% CPU 时间，不管它们的 cpu 共享权值是多少。
+
+假设有三个正在运行的容器，这三个容器中的任务都是 CPU 密集型的。第一个容器的 cpu 共享权值是 1024，其它两个容器的 cpu 共享权值是 512。第一个容器将得到 50% 的 CPU 时间，而其它两个容器就只能各得到 25% 的 CPU 时间了。如果再添加第四个 cpu 共享值为 1024 的容器，每个容器得到的 CPU 时间将重新计算。第一个容器的CPU 时间变为 33%，其它容器分得的 CPU 时间分别为 16.5%、16.5%、33%。
+
+在多核系统上，CPU 时间权值是在所有 CPU 核上计算的。即使某个容器的 CPU 时间限制少于 100%，它也能使用各个 CPU 核的 100% 时间。
+
+例如，假设有一个不止三核的系统。用`-c=512`的选项启动容器`{C0}`，并且该容器只有一个进程，用`-c=1024`的启动选项为启动容器`C2`，并且该容器有两个进程。CPU 权值的分布可能是这样的：
+
+```shell
+PID    container	CPU	CPU share
+100    {C0}		0	100% of CPU0
+101    {C1}		1	100% of CPU1
+102    {C1}		2	100% of CPU2
+```
+
+### CPU 调度周期
+
+默认的 CPU CFS（Completely Fair Scheduler，完全公平调度器） 周期是 100ms。我们可以使用`--cpu-period`选项设置 CPUs 的调度周期来限制容器的 CPU 使用。一般`--cpu-period`应该和`--cpu-quota`一起配合使用。
+
+例如：
+
+```shell
+$ docker run -it --cpu-period=50000 --cpu-quota=25000 ubuntu:16.04 /bin/bash
+```
+
+意味着：如果只有一个 CPU 核，该容器每 50ms 可以得到 50% 的 CPU 运行时间。
+
+关于 CFS	 的更多信息，参考[CFS documentation on bandwidth limiting](https://www.kernel.org/doc/Documentation/scheduler/sched-bwc.txt)。
+
+### CPU 集
+
+我们可以设置容器可以在哪些 CPU 核上运行。
+
+例如：
+
+```shell
+$ docker run -it --cpuset-cpus="1,3" ubuntu:14.04 /bin/bash
+```
+
+表示容器中的进程可以在 cpu 1 和 cpu 3 上执行。
+
+```shell
+$ docker run -it --cpuset-cpus="0-2" ubuntu:14.04 /bin/bash
+```
+
+表示容器中的进程可以在 cpu 0、cpu 1 及 cpu 3 上执行。
+
+在 NUMA 系统上，我们可以设置容器可以使用的内存节点。
+
+例如：
+
+```shell
+$ docker run -it --cpuset-mems="1,3" ubuntu:14.04 /bin/bash
+```
+
+表示容器中的进程只能使用内存节点 1 和 3 上的内存。
+
+```shell
+$ docker run -it --cpuset-mems="0-2" ubuntu:14.04 /bin/bash
+```
+
+表示容器中的进程只能使用内存节点 0、1、2 上的内存。
+
+### CPU 配额
+
+
 
