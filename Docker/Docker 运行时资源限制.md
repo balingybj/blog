@@ -168,44 +168,9 @@ Docker 的资源限制和隔离完全基于 Linux cgroups。对 CPU 资源的限
 | `--cpu-quota=0`       | 限制 CPU CFS 配额                  |
 | `--cpuset-mems=""`    | 允许在上执行的内存节点（MEMs），只对 NUMA 系统有效 |
 
-其中`--cpuset-cpus`用于设置容器可以使用的 vCPU 核。`-c`,`--cpu-shares`用于设置多个容器竞争 CPU 时，各个容器相对能分配到的 CPU 时间。`--cpu-period`和`--cpu-quata`用于绝对设置容器能使用 CPU 时间。
+其中`--cpuset-cpus`用于设置容器可以使用的 vCPU 核。`-c`,`--cpu-shares`用于设置多个容器竞争 CPU 时，各个容器相对能分配到的 CPU 时间比例。`--cpu-period`和`--cpu-quata`用于绝对设置容器能使用 CPU 时间。
 
 `--cpuset-mems`暂用不上，这里不谈。
-
-### CPU 共享权值
-
-默认情况下，所有的容器得到同等比例的 CPU 周期。这个比例可以通过修改容器的 CPU 共享权值来修改。每个容器的 CPU 共享权重都是相对于所有容器的总权值而言的。
-
-容器默认的权值为 1024，使用`-c`或`--cpu-shares`选项可以设置权值。如果将其设置为 0，系统将忽略该值并使用默认的 1024。
-
-这个比例只有在 CPU 密集型的任务执行时才有用。在四核的系统上，假设有四个当进程的容器，它们都能各自使用一个核的 100% CPU 时间，不管它们的 cpu 共享权值是多少。
-
-假设有三个正在运行的容器，这三个容器中的任务都是 CPU 密集型的。第一个容器的 cpu 共享权值是 1024，其它两个容器的 cpu 共享权值是 512。第一个容器将得到 50% 的 CPU 时间，而其它两个容器就只能各得到 25% 的 CPU 时间了。如果再添加第四个 cpu 共享值为 1024 的容器，每个容器得到的 CPU 时间将重新计算。第一个容器的CPU 时间变为 33%，其它容器分得的 CPU 时间分别为 16.5%、16.5%、33%。
-
-在多核系统上，CPU 时间权值是在所有 CPU 核上计算的。即使某个容器的 CPU 时间限制少于 100%，它也能使用各个 CPU 核的 100% 时间。
-
-例如，假设有一个不止三核的系统。用`-c=512`的选项启动容器`{C0}`，并且该容器只有一个进程，用`-c=1024`的启动选项为启动容器`C2`，并且该容器有两个进程。CPU 权值的分布可能是这样的：
-
-```shell
-PID    container	CPU	CPU share
-100    {C0}		0	100% of CPU0
-101    {C1}		1	100% of CPU1
-102    {C1}		2	100% of CPU2
-```
-
-### CPU 调度周期
-
-默认的 CPU CFS（Completely Fair Scheduler，完全公平调度器） 周期是 100ms。我们可以使用`--cpu-period`选项设置 CPUs 的调度周期来限制容器的 CPU 使用。一般`--cpu-period`应该和`--cpu-quota`一起配合使用。
-
-例如：
-
-```shell
-$ docker run -it --cpu-period=50000 --cpu-quota=25000 ubuntu:16.04 /bin/bash
-```
-
-意味着：如果只有一个 CPU 核，该容器每 50ms 可以得到 50% 的 CPU 运行时间。
-
-关于 CFS	 的更多信息，参考[CFS documentation on bandwidth limiting](https://www.kernel.org/doc/Documentation/scheduler/sched-bwc.txt)。
 
 ### CPU 集
 
@@ -241,7 +206,44 @@ $ docker run -it --cpuset-mems="0-2" ubuntu:14.04 /bin/bash
 
 表示容器中的进程只能使用内存节点 0、1、2 上的内存。
 
-### CPU 配额
+### CPU 资源的相对限制
 
+默认情况下，所有的容器得到同等比例的 CPU 周期。在有多个容器竞争 CPU 时我们可以设置每个容器能使用的 CPU 时间比例。这个比例叫作共享权值，通过`-c`或`--cpu-shares`设置。Docker 默认每个容器的权值为 1024。不设置或将其设置为 0，都将使用这个默认值。系统会根据每个容器的共享权值和所有容器共享权值和比例来给容器分配 CPU 时间。
 
+假设有三个正在运行的容器，这三个容器中的任务都是 CPU 密集型的。第一个容器的 cpu 共享权值是 1024，其它两个容器的 cpu 共享权值是 512。第一个容器将得到 50% 的 CPU 时间，而其它两个容器就只能各得到 25% 的 CPU 时间了。如果再添加第四个 cpu 共享值为 1024 的容器，每个容器得到的 CPU 时间将重新计算。第一个容器的CPU 时间变为 33%，其它容器分得的 CPU 时间分别为 16.5%、16.5%、33%。
+
+必须注意的是，这个比例只有在 CPU 密集型的任务执行时才有用。在四核的系统上，假设有四个单进程的容器，它们都能各自使用一个核的 100% CPU 时间，不管它们的 cpu 共享权值是多少。
+
+在多核系统上，CPU 时间权值是在所有 CPU 核上计算的。即使某个容器的 CPU 时间限制少于 100%，它也能使用各个 CPU 核的 100% 时间。
+
+例如，假设有一个不止三核的系统。用`-c=512`的选项启动容器`{C0}`，并且该容器只有一个进程，用`-c=1024`的启动选项为启动容器`C2`，并且该容器有两个进程。CPU 权值的分布可能是这样的：
+
+```shell
+PID    container	CPU	CPU share
+100    {C0}		0	100% of CPU0
+101    {C1}		1	100% of CPU1
+102    {C1}		2	100% of CPU2
+```
+
+### CPU 资源的绝对限制
+
+Linux 通过 CFS（Completely Fair Scheduler，完全公平调度器）来调度各个进程对 CPU 的使用。CFS 默认的调度周期是 100ms。
+
+>   关于 CFS	 的更多信息，参考[CFS documentation on bandwidth limiting](https://www.kernel.org/doc/Documentation/scheduler/sched-bwc.txt)。
+
+我们可以设置每个容器进程的调度周期，以及在这个周期内各个容器能使用多少 CPU 时间。使用`--cpu-period`即可设置调度周期，使用`--cpu-quota`即可设置在每个周期内容器能使用的 CPU 时间。两者一般配合使用。
+
+例如：
+
+```shell
+$ docker run -it --cpu-period=50000 --cpu-quota=25000 ubuntu:16.04 /bin/bash
+```
+
+将 CFS 调度的周期设为 50000，将容器在每个周期内的 CPU 配额设置为 25000，表示该容器每 50ms 可以得到 50% 的 CPU 运行时间。
+
+```shell
+$ docker run -it --cpu-period=10000 --cpu-quota=20000 ubuntu:16.04 /bin/bash
+```
+
+将容器的 CPU 配额设置为 CFS 周期的两倍，CPU 使用时间怎么会比周期大呢？其实很好解释，给容器分配两个 vCPU 就可以了。该配置表示容器可以在每个周期内使用两个 vCPU 的 100% 时间。
 
