@@ -35,6 +35,16 @@ Docker 提供的内存限制功能有以下几点：
 
 用户内存限制就是对容器能使用的内存和交换分区的大小作出限制。使用时要遵循两条直观的规则：`-m，--memory`选项的参数最小为 4 M。`--memory-swap`不是交换分区，而是内存加交换分区的总大小，所以`--memory-swap`必须比`-m,--memory`大。在这两条规则下，一般有四种设置方式。
 
+>   你可能在进行内存限制的实验时发现`docker run`命令报错：WARNING: Your kernel does not support swap limit capabilities, memory limited without swap.
+>
+>   这是因为宿主机内核的相关功能没有打开。按照下面的设置就行。
+>
+>   step 1：编辑`/etc/default/grub`文件，将`GRUB_CMDLINE_LINUX`一行改为`GRUB_CMDLINE_LINUX="cgroup_enable=memory swapaccount=1"`
+>
+>   step 2：更新 GRUB，即执行`$ sudo update-grub`
+>
+>   step 3: 重启系统。
+
 #### 1. 不设置
 
 如果不设置`-m,--memory`和`--memory-swap`，容器默认可以用完宿舍机的所有内存和 swap 分区。不过注意，如果容器占用宿主机的所有内存和 swap 分区超过一段时间后，会被宿主机系统杀死（如果没有设置`--00m-kill-disable=true`的话）。
