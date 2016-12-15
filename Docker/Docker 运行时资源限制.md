@@ -170,13 +170,13 @@ Docker 的资源限制和隔离完全基于 Linux cgroups。对 CPU 资源的限
 
 `docker run`命令和 CPU 限制相关的所有选项如下：
 
-| 选项                    | 描述                             |
-| --------------------- | ------------------------------ |
-| `--cpuset-cpus=""`    | 允许使用的 CPU 集，值可以为 0-3,0,1       |
-| `-c`,`--cpu-shares=0` | CPU 共享权值（相对权重）                 |
-| `cpu-period=0`        | 限制 CPU CFS 的周期                 |
-| `--cpu-quota=0`       | 限制 CPU CFS 配额                  |
-| `--cpuset-mems=""`    | 允许在上执行的内存节点（MEMs），只对 NUMA 系统有效 |
+| 选项                    | 描述                                       |
+| --------------------- | ---------------------------------------- |
+| `--cpuset-cpus=""`    | 允许使用的 CPU 集，值可以为 0-3,0,1                 |
+| `-c`,`--cpu-shares=0` | CPU 共享权值（相对权重）                           |
+| `cpu-period=0`        | 限制 CPU CFS 的周期，范围从 100ms~1s，即[1000, 1000000] |
+| `--cpu-quota=0`       | 限制 CPU CFS 配额，必须不小于1ms，即 >= 1000         |
+| `--cpuset-mems=""`    | 允许在上执行的内存节点（MEMs），只对 NUMA 系统有效           |
 
 其中`--cpuset-cpus`用于设置容器可以使用的 vCPU 核。`-c`,`--cpu-shares`用于设置多个容器竞争 CPU 时，各个容器相对能分配到的 CPU 时间比例。`--cpu-period`和`--cpu-quata`用于绝对设置容器能使用 CPU 时间。
 
@@ -257,3 +257,4 @@ $ docker run -it --cpu-period=10000 --cpu-quota=20000 ubuntu:16.04 /bin/bash
 
 将容器的 CPU 配额设置为 CFS 周期的两倍，CPU 使用时间怎么会比周期大呢？其实很好解释，给容器分配两个 vCPU 就可以了。该配置表示容器可以在每个周期内使用两个 vCPU 的 100% 时间。
 
+CFS	 周期的有效范围是 1ms~1s，对应的`--cpu-period`的数值范围是 1000~1000000。而容器的 CPU 配额必须不小于 1ms，即`--cpu-quota`的值必须 >= 1000。可以看出这两个选项的单位都是 us。
