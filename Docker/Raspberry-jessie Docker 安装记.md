@@ -2,7 +2,7 @@
 
 前几天实验室买了个几个树莓派 3b，老师想让我们在上面搭建微服务之类的。虽然需求不太明确，但是 Docker 指定要用，还得用 Docker 创建集群。所以我们得在树莓派上安装 Docker 的。我们之前没接触过 ARM 架构，再加上国内访问国外的网速，我们对于在树莓派上安装 Docker 是有点恐惧的。不过事实证明，确实比较麻烦，但是可以解决。以下的 Docker 安装都是指 docker-engline 的安装。
 
-本文先会议一下整个安装过程，最后整理出干净的安装步骤。对过程不敢兴趣，可以直接跳转到最后总结的[安装步骤](#总结在 Raspbian-jessie 上安装 docker 的步骤)。
+本文先会议一下整个安装过程，最后整理出干净的安装步骤。对过程不敢兴趣，可以直接跳转到最后总结的[安装步骤](#"总结在 Raspbian-jessie 上安装 docker 的步骤")。
 
 ## 树莓派操作系统的选择
 
@@ -37,7 +37,9 @@ deb-src http://ftp.xdlinux.info/raspbian/raspbian/ jessie main non-free contrib
 
 替换后`sudo apt-get update`。
 
-### 安装 Docker 最新版的过程
+### 开始安装 Docker
+
+正式开始安装 Docker，遇到了好几个问题。
 
 ####  1. Raspbian 官方仓库提供的 Docker 不能用
 
