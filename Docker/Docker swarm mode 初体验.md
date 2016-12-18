@@ -22,9 +22,21 @@
 
 主机之间的以下端口必须是开放。某些环境下，这些端口默认是允许的：
 
--   TCP 端口 2377 用于集群管理通信
--   TCP 和 UDP 端口 7946 用于节点间通信
--   TCP 和 UDP 端口 4789 用于 overlay 网络流量
+-   TCP 端口 2377 用于集群管理通信（管理节点）
+-   TCP 和 UDP 端口 7946 用于节点间通信（所有节点）
+-   TCP 和 UDP 端口 4789 用于 overlay 网络流量（所有节点）
+
+
+如果你的这些端口没有打开，可以用`uptables`命令打开它们：
+
+```shell
+iptables -A INPUT -p tcp --dport 2377 -j ACCEPT
+iptables -A INPUT -p tcp --dport 7946 -j ACCEPT
+iptables -A INPUT -p udp --dport 7946 -j ACCEPT
+iptables -A INPUT -p tcp --dport 4789 -j ACCEPT
+iptables -A INPUT -p udp --dport 4789 -j ACCEPT
+```
+
 
 
 
