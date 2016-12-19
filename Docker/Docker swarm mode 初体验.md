@@ -57,7 +57,7 @@ To add a worker to this swarm, run the following command:
 To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
 ```
 
-`--advertise-addr`标志配置了管理节点的 IP 地址。输出信息说明了怎样将新节点加入到 swarm 中。
+`--advertise-addr`标志配置了管理节点的 IP 地址。如果你的机器只有一个 IP 地址，可以省略`--adbertise-addr`选项。输出信息说明了怎样将新节点加入到 swarm 中。
 
 ### 执行`docker info`命令查看`swarm`的当前状态
 
