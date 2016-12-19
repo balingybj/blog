@@ -37,6 +37,10 @@ deb-src http://ftp.xdlinux.info/raspbian/raspbian/ jessie main non-free contrib
 
 替换后`sudo apt-get update`。
 
+### 让 ssh 服务开机启动
+
+装好 Raspbian-jessie 后，不想给它接键盘和显示器，想通过自己的笔记本 ssh 过去操作。但是发现 ssh 一直被拒绝。可能是 Raspbian-jessie 默认没有开启 sshd 服务。只好给树莓派接上显示器和键盘，然后手动开启 ssh 服务。可是这样有时候能成功，有时候 ssh 会报错`connection reset`。而且按照一般的方法将 ssh 加入开机启动也有问题。后来查看官网文档，发现 Raspbian-jessie 提供一个配置工具`raspi-config`，通过`sudo raspi-config`，然后在弹出的界面上选择 ssh 服务，终于成功了。
+
 ### 开始安装 Docker
 
 正式开始安装 Docker，遇到了好几个问题。
