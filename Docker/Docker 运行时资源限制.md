@@ -241,7 +241,7 @@ Linux 通过 CFS（Completely Fair Scheduler，完全公平调度器）来调度
 
 >   关于 CFS	 的更多信息，参考[CFS documentation on bandwidth limiting](https://www.kernel.org/doc/Documentation/scheduler/sched-bwc.txt)。
 
-我们可以设置每个容器进程的调度周期，以及在这个周期内各个容器能使用多少 CPU 时间。使用`--cpu-period`即可设置调度周期，使用`--cpu-quota`即可设置在每个周期内容器能使用的 CPU 时间。两者一般配合使用。
+我们可以设置每个容器进程的调度周期，以及在这个周期内各个容器**最多**能使用多少 CPU 时间。使用`--cpu-period`即可设置调度周期，使用`--cpu-quota`即可设置在每个周期内容器能使用的 CPU 时间。两者一般配合使用。
 
 例如：
 
@@ -258,3 +258,29 @@ $ docker run -it --cpu-period=10000 --cpu-quota=20000 ubuntu:16.04 /bin/bash
 将容器的 CPU 配额设置为 CFS 周期的两倍，CPU 使用时间怎么会比周期大呢？其实很好解释，给容器分配两个 vCPU 就可以了。该配置表示容器可以在每个周期内使用两个 vCPU 的 100% 时间。
 
 CFS	 周期的有效范围是 1ms~1s，对应的`--cpu-period`的数值范围是 1000~1000000。而容器的 CPU 配额必须不小于 1ms，即`--cpu-quota`的值必须 >= 1000。可以看出这两个选项的单位都是 us。
+
+#### 正确的理解“绝对”
+
+注意前面我们用`--cpu-quota`设置容器在一个调度周期内能使用的 CPU 时间时实际上设置的是一个上限。并不是说容器一定会使用这么长的 CPU 时间。比如，我们先启动一个容器，将其绑定到 cpu 1 上执行。给其`--cpu-quota`和`--cpu-period`都设置为 50000。
+
+```shell
+$ docker run --rm --name test01 --cpu-cpus 1 --cpu-quota=50000 --cpu-period=50000 deadloop:busybox-1.25.1-glibc
+```
+
+调度周期为 50000，容器在每个周期内最多能使用 50000 cpu 时间。
+
+再用`docker stats test01`可以观察到该容器对 CPU 的使用率在100%左右。然后，我们再以同样的参数启动另一个容器。
+
+```shell
+$ docker run --rm --name test02 --cpu-cpus 1 --cpu-quota=50000 --cpu-period=50000 deadloop:busybox-1.25.1-glibc
+```
+
+再用`docker stats test01 test02`可以观察到这两个容器，每个容器对 cpu 的使用率在 50% 左右。说明容器并没有在每个周期内使用 50000 的 cpu 时间。
+
+使用`docker stop test02`命令结束第二个容器，再加一个参数`-c 2048`启动它：
+
+```shell
+$ docker run --rm --name test02 --cpu-cpus 1 --cpu-quota=50000 --cpu-period=50000 -c 2048 deadloop:busybox-1.25.1-glibc
+```
+
+再用`docker stats test01`命令可以观察到第一个容器的 CPU 使用率在 33% 左右，第二个容器的 CPU 使用率在 66% 左右。因为第二个容器的共享值是 2048，第一个容器的默认共享值是 1024，所以第二个容器在每个周期内能使用的 CPU 时间是第一个容器的两倍。
