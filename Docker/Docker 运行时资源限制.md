@@ -164,7 +164,7 @@ $ docker run -it --memory-swappiness=0 ubuntu:16.04 /bin/bash
 
 ### 概述
 
-Docker 的资源限制和隔离完全基于 Linux cgroups。对 CPU 资源的限制方式也和 cgroups 相同。Docker 提供的 CPU 资源限制选项可以在多核系统上限制容器能利用哪些 vCPU。而对容器最多能使用的 CPU 时间有两种限制方式：一是有多个 CPU 密集型的容器竞争 CPU 时，设置各个容器能使用的 CPU 时间相对比例。二是以绝对的方式设置容器能使用的 CPU 时间。
+Docker 的资源限制和隔离完全基于 Linux cgroups。对 CPU 资源的限制方式也和 cgroups 相同。Docker 提供的 CPU 资源限制选项可以在多核系统上限制容器能利用哪些 vCPU。而对容器最多能使用的 CPU 时间有两种限制方式：一是有多个 CPU 密集型的容器竞争 CPU 时，设置各个容器能使用的 CPU 时间相对比例。二是以绝对的方式设置容器在每个调度周期内**最多**能使用的 CPU 时间。
 
 ### CPU 限制相关参数
 
