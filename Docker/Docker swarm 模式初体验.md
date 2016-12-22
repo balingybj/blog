@@ -86,20 +86,22 @@ iptables -A INPUT -p udp --dport 4789 -j ACCEPT
 
 ### 创建一个 swarm
 
+随意选择一个主机作为管理节点，在上面初始化一个 swarm：
+
 ```shell
-~$ docker swarm init --advertise-addr 192.168.59.128
-Swarm initialized: current node (9d4x1kfnqqoor4pb2dsnsonl2) is now a manager.
+chao@manager01:~$ docker swarm init --advertise-addr 192.168.59.128
+Swarm initialized: current node (7ik7wqhe5wcag8k5tp816c7ck) is now a manager.
 
 To add a worker to this swarm, run the following command:
 
     docker swarm join \
-    --token SWMTKN-1-3wi7tszkolocsbc7vopv1tfx2r2h1owtqegwevdqqdk3fj195u-ejpeq0afjvfmujlvzboux9zjs \
+    --token SWMTKN-1-0p0p5f96e1w4xblhw2eeookrv46spwf4yx7qmve2srxe9wec5g-ellbnyt4cwwvvdkssaj0cbtus \
     192.168.59.128:2377
 
 To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
 ```
 
-`--advertise-addr`标志配置了管理节点的 IP 地址。如果你的机器只有一个 IP 地址，可以省略`--adbertise-addr`选项。输出信息说明了怎样将新节点加入到 swarm 中。
+`--advertise-addr` 标志配置了管理节点的 IP 地址。如果你的机器只有一个 IP 地址，可以省略`--adbertise-addr`选项，docker 会自动选择正确的 IP。上输出信息说明了怎样加入新的工作节点。也说明了执行`docker swarm join-token manager` 可以查询怎样加入新的管理节点。
 
 ### 执行`docker info`命令查看`swarm`的当前状态
 
@@ -107,20 +109,20 @@ To add a manager to this swarm, run 'docker swarm join-token manager' and follow
 ~$ docker info
 ...
 Swarm: active
- NodeID: 9d4x1kfnqqoor4pb2dsnsonl2
+ NodeID: 7ik7wqhe5wcag8k5tp816c7ck
  Is Manager: true
- ClusterID: 1ffzpqr0mbeduc02hg885108b
+ ClusterID: 2scd04fv8c9mua1jiaq6n0370
  Managers: 1
  Nodes: 1
  ...
 ```
 
-### 执行`docker node ls`命令查看节点信息
+### 执行 `docker node ls` 命令查看节点信息
 
 ```shell
-~$ docker node ls
-ID                           HOSTNAME  STATUS  AVAILABILITY  MANAGER STATUS
-9d4x1kfnqqoor4pb2dsnsonl2 *  chao-v    Ready   Active        Leader
+$ docker node ls
+ID                           HOSTNAME   STATUS  AVAILABILITY  MANAGER STATUS
+7ik7wqhe5wcag8k5tp816c7ck *  manager01  Ready   Active        Leader
 ```
 
 节点 id 后面的`*`表示你当前连接到了该节点。
@@ -129,16 +131,16 @@ ID                           HOSTNAME  STATUS  AVAILABILITY  MANAGER STATUS
 
 ### 添加两个工作节点到`swarm`
 
-在第二台主机上，执行前面创建`swarm`时`docker swarm init`输出信息中命令创建工作节点并加入到`swarm`
+在第二台主机上，执行前面创建 `swarm` 时 `docker swarm init` 输出信息中命令创建工作节点并加入到 `swarm`
 
 ```shell
-~$ docker swarm join \
-  --token SWMTKN-1-3wi7tszkolocsbc7vopv1tfx2r2h1owtqegwevdqqdk3fj195u-ejpeq0afjvfmujlvzboux9zjs   \   192.168.59.128:2377
+chao@worker01:~$ docker swarm join \
+     --token SWMTKN-1-0p0p5f96e1w4xblhw2eeookrv46spwf4yx7qmve2srxe9wec5g-ellbnyt4cwwvvdkssaj0cbtus \
+     192.168.59.128:2377
 This node joined a swarm as a worker.
-
 ```
 
-输出信息表示当前节点已是`swarm`中的一个工作节点了。如果你忘记了该命令，可以在管理节点上执行`docker swarm join-token worker `查询
+输出信息表示当前节点已是 `swarm` 中的一个工作节点了。如果你忘记了该命令，可以在管理节点上执行 `docker swarm join-token worker ` 查询怎么加入。
 
 ```shell
 ~$ docker swarm join-token worker 
@@ -149,11 +151,12 @@ To add a worker to this swarm, run the following command:
     192.168.59.128:2377
 ```
 
-到第三台主机上，继续讲第三台主机加入到`swarm`中
+到第三台主机上，继续讲第三台主机加入到 `swarm` 中
 
 ```shell
-$ docker swarm join \
-     --token SWMTKN-1-3wi7tszkolocsbc7vopv1tfx2r2h1owtqegwevdqqdk3fj195u-ejpeq0afjvfmujlvzboux9zjs \    192.168.59.128:2377
+chao@worker02:~$ docker swarm join \
+     --token SWMTKN-1-0p0p5f96e1w4xblhw2eeookrv46spwf4yx7qmve2srxe9wec5g-ellbnyt4cwwvvdkssaj0cbtus \
+     192.168.59.128:2377
 This node joined a swarm as a worker.
 ```
 
@@ -162,39 +165,39 @@ This node joined a swarm as a worker.
 在管理节点上
 
 ```shell
-$ docker node ls
-ID                           HOSTNAME  STATUS  AVAILABILITY  MANAGER STATUS
-97f30o9pu20kpazecn54qn00n    chao-v    Ready   Active        
-9d4x1kfnqqoor4pb2dsnsonl2 *  chao-v    Ready   Active        Leader
-9mu0c1319pmytgeuak8874zz9    chao-v    Ready   Active    
+chao@manager01:~$ docker node ls
+ID                           HOSTNAME   STATUS  AVAILABILITY  MANAGER STATUS
+4rkvaeauhftolat98u5ty01iz    worker02   Ready   Active        
+7ik7wqhe5wcag8k5tp816c7ck *  manager01  Ready   Active        Leader
+cashcvy4qzcq3lvtnix4trqu7    worker01   Ready   Active
 ```
 
-输出信息第二行 id 后面的`*`表示当前连接到了该节点。`HOSTNAME`栏输出节点的 hostname，我三个节点的 hostname 都是`chao-v`，别问我为什么，因为我用的虚拟机，后两个节点都是拷贝自第一个节点，而且没改 hostname。`MANAGER`用于指示`swarm`中的管理节点，该栏值为`Leader`表示为管理节点，空值表示为工作节点。
+输出信息第二行 id 后面的`*`表示当前连接到了该节点。`HOSTNAME` 栏输出节点的 hostname。`MANAGER` 用于指示 `swarm`中的管理节点，该栏值为 `Leader` 表示为管理节点，空值表示为工作节点。
 
-## 部署一个服务到`swarm`
+## 部署一个服务到 `swarm`
 
 ### 创建服务
 
-在管理节点上
+在管理节点上创建一个服务，每隔三秒输出一个 "hello world"：
 
 ```shell
-$ docker service create --replicas 1 --name helloworld alpine:3.4 ping baidu.com
-d717uhdl48tntpfu7zdcgo6se
+chao@manager01:~$ docker service create --replicas 1 --name helloworld busybox:1.25.1-musl /bin/sh -c "while true; do echo hello world; sleep 3; done"
+04a3iqg8zlhba84kpi2tatssf
 ```
 
--   `docker service create`命令创建服务。
--   `--name`标志将服务命名为`helloworld`。
--   `--replicas`标志指定了期望状态为 1 个运行示例。
--   参数`alpline:3.4 ping baidu.com`将服务定义为一个 Alpine Linux 容器执行`ping baidu.com`命令。
+-   `docker service create` 命令创建服务。
+-   `--name` 标志将服务命名为`helloworld`。
+-   `--replicas` 标志指定了期望状态为 1 个运行示例。
+-   参数 `busybox:1.25.1-musl /bin/sh -c "while true; do echo hello world; sleep 3; done` 将服务定义为使用镜像`busybox:1.25.1-musl` 创建容器，并在里面执行 `/bin/sh -c "while true; do echo hello world; sleep 3; done`。
 
 ### 查看服务列表
 
 还是在管理节点上
 
 ```shell
-$ docker service ls
-ID            NAME        REPLICAS  IMAGE       COMMAND
-d717uhdl48tn  helloworld  1/1       alpine:3.4  ping baidu.com
+chao@manager01:~$ docker service ls
+ID            NAME        REPLICAS  IMAGE                COMMAND
+04a3iqg8zlhb  helloworld  0/1       busybox:1.25.1-musl  /bin/sh -c while true; do echo hello world; sleep 3; done
 ```
 
 ## 查看服务的详细信息
@@ -205,7 +208,7 @@ d717uhdl48tn  helloworld  1/1       alpine:3.4  ping baidu.com
 
 ```shell
 $ docker service inspect --pretty helloworld 
-ID:		d717uhdl48tntpfu7zdcgo6se
+ID:		04a3iqg8zlhba84kpi2tatssf
 Name:		helloworld
 Mode:		Replicated
  Replicas:	1
@@ -214,31 +217,32 @@ UpdateConfig:
  Parallelism:	1
  On failure:	pause
 ContainerSpec:
- Image:		alpine:3.4
- Args:		ping baidu.com
+ Image:		busybox:1.25.1-musl
+ Args:		/bin/sh -c while true; do echo hello world; sleep 3; done
 Resources:
 ```
 
 参数`--pretty`表示以可读性良好的格式输出。如果想输出详细的 json 格式信息，去掉`--pretty`参数即可。
 
 ```shell
-$ docker service inspect helloworld 
+$ docker service inspect  helloworld 
 [
     {
-        "ID": "d717uhdl48tntpfu7zdcgo6se",
+        "ID": "04a3iqg8zlhba84kpi2tatssf",
         "Version": {
-            "Index": 22
+            "Index": 23
         },
-        "CreatedAt": "2016-11-14T01:49:27.989653523Z",
-        "UpdatedAt": "2016-11-14T01:49:27.989653523Z",
+        "CreatedAt": "2016-12-22T15:00:03.780379494Z",
+        "UpdatedAt": "2016-12-22T15:00:03.780379494Z",
         "Spec": {
             "Name": "helloworld",
             "TaskTemplate": {
                 "ContainerSpec": {
-                    "Image": "alpine:3.4",
+                    "Image": "busybox:1.25.1-musl",
                     "Args": [
-                        "ping",
-                        "baidu.com"
+                        "/bin/sh",
+                        "-c",
+                        "while true; do echo hello world; sleep 3; done"
                     ]
                 },
                 "Resources": {
@@ -277,42 +281,24 @@ $ docker service inspect helloworld
 
 ### 查看哪个节点在运行该服务
 
-还是在管理节点上
+还是在管理节点上：
 
 ```shell
 $ docker service ps helloworld 
-ID                         NAME          IMAGE       NODE    DESIRED STATE  CURRENT STATE           ERROR
-ezqjxoewzlv6bgoz70rk85xxp  helloworld.1  alpine:3.4  chao-v  Running        Running 14 minutes ago  
+ID                         NAME          IMAGE                NODE       DESIRED STATE  CURRENT STATE          ERROR
+3mmy1k19z3hdoa62wz63pkmjt  helloworld.1  busybox:1.25.1-musl  manager01  Running        Running 4 minutes ago 
 ```
 
-输出信息表明，`helloworld`服务的一个实例在`chao-v`节点上执行。但我的三个节点的主机名都是`chao-v`，无法分辨服务具体是在哪个节点上。所以我们再次运行该命令，并用参数`--no-resolve`表明输出节点的 id。
+输出信息表明，`helloworld` 服务的一个实例在 `manager01` 节点上执行。这是因为，默认情况下管理节点也可以像工作节点一样执行任务。
 
-```shell
-$ docker service ps --no-resolve helloworld 
-ID                         NAME                         IMAGE       NODE                       DESIRED STATE  CURRENT STATE           ERROR
-ezqjxoewzlv6bgoz70rk85xxp  d717uhdl48tntpfu7zdcgo6se.1  alpine:3.4  9d4x1kfnqqoor4pb2dsnsonl2  Running        Running 19 minutes ago  
-```
-
-我们看到 `NODE`栏输出了一串 id。我们再查看一下`swarm`中所有节点的 id，对比一下就知道是哪个节点了。
-
-```shell
-$ docker node ls
-ID                           HOSTNAME  STATUS  AVAILABILITY  MANAGER STATUS
-97f30o9pu20kpazecn54qn00n    chao-v    Ready   Active        
-9d4x1kfnqqoor4pb2dsnsonl2 *  chao-v    Ready   Active        Leader
-9mu0c1319pmytgeuak8874zz9    chao-v    Ready   Active        
-```
-
-对比可以发现，服务居然是在管理节点上运行。这是因为，默认情况下管理节点也可以像工作节点一样执行任务。
-
-`DESIRED STATE`和`CURRENT STATE`表示服务的期望状态和当前状态，你可以对比它们，判断服务是否想期望的那样运行。这里的`Running`和`Running 14 minutes ago`说明服务运行正常。
+`DESIRED STATE`和`CURRENT STATE`表示服务的期望状态和当前状态，你可以对比它们，判断服务是否想期望的那样运行。这里的`Running`和`Running 4 minutes ago`说明服务运行正常。
 
 ### 在执行任务的节点上使用`docker ps`命令查看相关容器的详细信息
 
 ```shell
 $ docker ps
-CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-1f2572bd690e        alpine:3.4          "ping baidu.com"    28 minutes ago      Up 28 minutes                           helloworld.1.ezqjxoewzlv6bgoz70rk85xxp
+CONTAINER ID        IMAGE                 COMMAND                  CREATED             STATUS              PORTS               NAMES
+a471b58c133a        busybox:1.25.1-musl   "/bin/sh -c 'while tr"   6 minutes ago       Up 6 minutes                            helloworld.1.3mmy1k19z3hdoa62wz63pkmjt
 ```
 
 ## 伸缩服务
@@ -330,49 +316,51 @@ helloworld scaled to 5
 
 ### 查看服务列表
 
+在管理节点上：
+
 ```shell
-$ docker service ps --no-resolve helloworld 
-ID                         NAME                         IMAGE       NODE                       DESIRED STATE  CURRENT STATE            ERROR
-ezqjxoewzlv6bgoz70rk85xxp  d717uhdl48tntpfu7zdcgo6se.1  alpine:3.4  9d4x1kfnqqoor4pb2dsnsonl2  Running        Running 41 minutes ago   
-76ntgdarnpyine9cgir7e5oug  d717uhdl48tntpfu7zdcgo6se.2  alpine:3.4  97f30o9pu20kpazecn54qn00n  Running        Preparing 7 seconds ago  
-apetz2thnl2gos3iiapssdea8  d717uhdl48tntpfu7zdcgo6se.3  alpine:3.4  97f30o9pu20kpazecn54qn00n  Running        Preparing 7 seconds ago  
-0orapmj2jt8dhrmrlgndxbxbp  d717uhdl48tntpfu7zdcgo6se.4  alpine:3.4  9d4x1kfnqqoor4pb2dsnsonl2  Running        Preparing 7 seconds ago  
-298kwpykwyw8e7y6wb3rbf3dq  d717uhdl48tntpfu7zdcgo6se.5  alpine:3.4  9mu0c1319pmytgeuak8874zz9  Running        Preparing 7 seconds ago  
+$ docker service ps helloworld 
+ID                         NAME          IMAGE                NODE       DESIRED STATE  CURRENT STATE            ERROR
+3mmy1k19z3hdoa62wz63pkmjt  helloworld.1  busybox:1.25.1-musl  manager01  Running        Running 9 minutes ago    
+7s417360vd8ja49xfdt8egbcx  helloworld.2  busybox:1.25.1-musl  worker02   Running        Preparing 9 seconds ago  
+bmvcbb1basbbka0kjqplm862v  helloworld.3  busybox:1.25.1-musl  worker01   Running        Preparing 9 seconds ago  
+5aj7nyio2zo62xswl19kyg8o8  helloworld.4  busybox:1.25.1-musl  worker01   Running        Preparing 9 seconds ago  
+bwb8vie6mxtz8a55qo26up0mo  helloworld.5  busybox:1.25.1-musl  manager01  Running        Preparing 9 seconds ago  
 ```
 
-可以看到 7 秒前又创建了 4 个任务，现在一共有 5 个任务了。有两个在管理节点上执行。
+可以看到 9 秒前又创建了 4 个任务，现在一共有 5 个任务了。有两个在 `manager01` 上执行。
 
 ### 在各节点上查看服务
 
-首先是管理节点
+首先是管理节点：
 
 ```shell
 $ docker ps
-CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-849a91e6516a        alpine:3.4          "ping baidu.com"    2 minutes ago       Up 2 minutes                            helloworld.4.0orapmj2jt8dhrmrlgndxbxbp
-1f2572bd690e        alpine:3.4          "ping baidu.com"    44 minutes ago      Up 44 minutes                           helloworld.1.ezqjxoewzlv6bgoz70rk85xxp
+CONTAINER ID        IMAGE                 COMMAND                  CREATED              STATUS              PORTS               NAMES
+98da817cca74        busybox:1.25.1-musl   "/bin/sh -c 'while tr"   About a minute ago   Up About a minute                       helloworld.5.bwb8vie6mxtz8a55qo26up0mo
+a471b58c133a        busybox:1.25.1-musl   "/bin/sh -c 'while tr"   11 minutes ago       Up 11 minutes                           helloworld.1.3mmy1k19z3hdoa62wz63pkmjt
 ```
 
 再是工作节点1
 
 ```shell
 $ docker ps
-CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-1b0b9a5b8be9        alpine:3.4          "ping baidu.com"    3 minutes ago       Up 3 minutes                            helloworld.2.76ntgdarnpyine9cgir7e5oug
-c43e64fa487e        alpine:3.4          "ping baidu.com"    3 minutes ago       Up 3 minutes                            helloworld.3.apetz2thnl2gos3iiapssdea8
+CONTAINER ID        IMAGE                 COMMAND                  CREATED             STATUS              PORTS               NAMES
+16f0b076a2f6        busybox:1.25.1-musl   "/bin/sh -c 'while tr"   55 seconds ago      Up 54 seconds                           helloworld.3.bmvcbb1basbbka0kjqplm862v
+00fb48c39eb1        busybox:1.25.1-musl   "/bin/sh -c 'while tr"   56 seconds ago      Up 55 seconds                           helloworld.4.5aj7nyio2zo62xswl19kyg8o8
 ```
 
 再是工作节点2
 
 ```shell
 $ docker ps
-CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-8f404250c1a8        alpine:3.4          "ping baidu.com"    4 minutes ago       Up 4 minutes                            helloworld.5.298kwpykwyw8e7y6wb3rbf3dq
+CONTAINER ID        IMAGE                 COMMAND                  CREATED             STATUS              PORTS               NAMES
+68846b348c62        busybox:1.25.1-musl   "/bin/sh -c 'while tr"   2 minutes ago       Up 2 minutes                            helloworld.2.7s417360vd8ja49xfdt8egbcx
 ```
 
-可以看到：管理节点上运行了两个任务，工作节点1运行了一个任务，工作节点2运行了一个任务。
+可以看到：管理节点上运行了两个任务，工作节点1运行了两个任务，工作节点2运行了1个任务。
 
-## 删除`swarm`上运行的服务
+## 删除 `swarm` 上运行的服务
 
 ### 删除
 
@@ -388,20 +376,13 @@ helloworld
 在管理节点上
 
 ```shell
-$ docker service inspect helloworld
-[]
-Error: no such service: helloworld
+$ docker service ls
+ID  NAME  REPLICAS  IMAGE  COMMAND
 ```
 
-```shell
-$ docker ps
-CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-~$ docker ps -a
-CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                    PORTS               NAMES
-f63c8523e148        registry:latest     "/entrypoint.sh /etc/"   4 days ago          Exited (0) 47 hours ago                       registry
-```
+看不到任何服务了。
 
-在工作节点上
+在工作节点上：
 
 ```shell
 $ docker ps -a
