@@ -56,9 +56,9 @@ Swarm 模式有一个内置的 DNS 组件，它会自动给 swarm 中的每个�
 在开始本教程之前，你需要准备一下几样东西：
 
 -   三台通过网络连接的主机
--   Docker Engine 1.12 或更新版本
+-   每台主机安装 Docker Engine 1.12 或更新版本
 -   充当管理节点的主机 IP
--   主机之间端口相互开放
+-   主机之间开发下面提到的端口
 
 ### 主机之间端口开放
 
@@ -69,7 +69,7 @@ Swarm 模式有一个内置的 DNS 组件，它会自动给 swarm 中的每个�
 -   TCP 和 UDP 端口 4789 用于 overlay 网络流量（所有节点）
 
 
-如果你的这些端口没有打开，可以用`uptables`命令打开它们：
+如果你的这些端口没有打开，可以用`iptables`命令打开它们：
 
 ```shell
 iptables -A INPUT -p tcp --dport 2377 -j ACCEPT
