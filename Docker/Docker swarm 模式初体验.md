@@ -614,22 +614,23 @@ eb8f2m36c00h3kxpjfhctre32   \_ redis.3  redis:3.0.7-alpine  worker01   Shutdown 
 ### 再次将被下线的节点重置为活动状态
 
 ```shell
-$ docker node update --availability active 9mu0c
-9mu0c
+$ docker node update --availability active worker02
+worker02
 ```
 
 ### 确认该节点的新状态
 
 ```shell
 $ docker node ls
-ID                           HOSTNAME  STATUS  AVAILABILITY  MANAGER STATUS
-97f30o9pu20kpazecn54qn00n    chao-v    Ready   Active        
-9d4x1kfnqqoor4pb2dsnsonl2 *  chao-v    Ready   Active        Leader
-9mu0c1319pmytgeuak8874zz9    chao-v    Ready   Active
-$ docker node inspect --pretty 9mu0c
-ID:			9mu0c1319pmytgeuak8874zz9
-Hostname:		chao-v
-Joined at:		2016-11-14 01:16:35.232165074 +0000 utc
+ID                           HOSTNAME   STATUS  AVAILABILITY  MANAGER STATUS
+4rkvaeauhftolat98u5ty01iz    worker02   Ready   Active        
+7ik7wqhe5wcag8k5tp816c7ck *  manager01  Ready   Active        Leader
+cashcvy4qzcq3lvtnix4trqu7    worker01   Ready   Active
+
+$ docker node inspect --pretty worker02
+ID:			4rkvaeauhftolat98u5ty01iz
+Hostname:		worker02
+Joined at:		2016-12-22 14:51:02.806948804 +0000 utc
 Status:
  State:			Ready
  Availability:		Active
@@ -638,36 +639,43 @@ Status:
 
 说明现在该节点又可以重新接收任务了。
 
+再看看 `worker02` 节点上是否被分配了任务：
+
+```shell
+$ docker service ps -f desired-state=running redis 
+ID                         NAME     IMAGE               NODE       DESIRED STATE  CURRENT STATE           ERROR
+9b89vrug0wz1nw28840rv5r57  redis.1  redis:3.2.5-alpine  manager01  Running        Running 20 minutes ago  
+1lwslgvlq631v14urjuo2vge2  redis.2  redis:3.2.5-alpine  worker01   Running        Running 13 minutes ago  
+cozd08m25sg3eip9cimsc6bc7  redis.3  redis:3.2.5-alpine  manager01  Running        Running 20 minutes ago  
+```
+
+`desired-state` 表示只列出处于活动状态的任务。说明 `worker02` 虽然可用，但没被分配任务。
+
 一个可用性为`Active`的节点在以下情况下可以接收到新任务：
 
 -   当一个服务在伸缩规模时
 -   滚动更新时
--   当你把其他某个节点的可用性设为`Drain`时
--   当某个任务在另外某个`Active`节点上启动失败时
+-   当你把其他某个节点的可用性设为 `Drain` 时
+-   当某个任务在另外某个 `Active` 节点上启动失败时
 
 
+我们扩大一下服务的规模，看是否有新任务被分配到 `worker02` 上：
 
+```shell
+$ docker service scale redis=5
+redis scaled to 5
+```
 
+在查看一个任务分配情况：
 
+```shell
+$ docker service ps -f desired-state=running  redis 
+ID                         NAME     IMAGE               NODE       DESIRED STATE  CURRENT STATE               ERROR
+9b89vrug0wz1nw28840rv5r57  redis.1  redis:3.2.5-alpine  manager01  Running        Running 26 minutes ago      
+1lwslgvlq631v14urjuo2vge2  redis.2  redis:3.2.5-alpine  worker01   Running        Running 19 minutes ago      
+cozd08m25sg3eip9cimsc6bc7  redis.3  redis:3.2.5-alpine  manager01  Running        Running 25 minutes ago      
+0s11xwnvusv0vorgnjielg7ef  redis.4  redis:3.2.5-alpine  worker02   Running        Running about a minute ago  
+035fd3l4xz6bvlz5wi4s04b9k  redis.5  redis:3.2.5-alpine  worker02   Running        Running about a minute ago 
+```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+可以看到，`worker02` 被新分配了两个任务。
