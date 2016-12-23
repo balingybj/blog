@@ -289,7 +289,7 @@ ID                         NAME          IMAGE                NODE       DESIRED
 3mmy1k19z3hdoa62wz63pkmjt  helloworld.1  busybox:1.25.1-musl  manager01  Running        Running 4 minutes ago 
 ```
 
-输出信息表明，`helloworld` 服务的一个实例在 `manager01` 节点上执行。这是因为，默认情况下管理节点也可以像工作节点一样执行任务。
+输出信息表明，`helloworld` 服务的一个实例在 `manager01` 节点上执行。这是因为，默认情况下管理节点是工作节点。
 
 `DESIRED STATE`和`CURRENT STATE`表示服务的期望状态和当前状态，你可以对比它们，判断服务是否想期望的那样运行。这里的`Running`和`Running 4 minutes ago`说明服务运行正常。
 
@@ -402,11 +402,11 @@ $ docker service create --replicas 3 --name redis --update-delay 10s redis:3.0.7
 c3hrsui7svtmzpxxars48tmtx
 ```
 
-我们在部署服务指定滚动更新策略。`--update-delay`表示更新服务对应的任务或一组任务之间的时间间隔。时间间隔用数字和时间单位表示，m 表示分，h 表示时，所以 10m30s 表示 10 分 30 秒的延时。
+我们在部署服务指定滚动更新策略。`--update-delay` 表示更新服务对应的任务或一组任务之间的时间间隔。时间间隔用数字和时间单位表示，m 表示分，h 表示时，所以 10m30s 表示 10 分 30 秒的延时。
 
-默认情况下，调度器一次更新一个任务。你可以使用`--update-parallelism`标志配置调度器每次同时更新的最大任务数量。
+默认情况下，调度器一次更新一个任务。你可以使用 `--update-parallelism` 标志配置调度器每次同时更新的最大任务数量。
 
-默认情况下，如果更新某个任务返回了`RUNNING`状态，调度器会转去更新另一个任务，直到所有任务都更新完成。如果在更新某个任务的任意时刻返回了`FAILED`，调度器暂停更新。我们可以在执行`docker service create`命令和`docker service update`命令时使用`--update-failure-action`标志来覆盖这种默认行为。
+默认情况下，如果更新某个任务返回了`RUNNING`状态，调度器会转去更新另一个任务，直到所有任务都更新完成。如果在更新某个任务的任意时刻返回了`FAILED`，调度器暂停更新。我们可以在执行 `docker service create` 命令和 `docker service update` 命令时使用 `--update-failure-action` 标志来覆盖这种默认行为。
 
 ### 查看`redis`服务
 
@@ -494,13 +494,13 @@ Resources:
 
 ```shell
 $ docker service ps redis 
-ID                         NAME         IMAGE               NODE    DESIRED STATE  CURRENT STATE           ERROR
-0bjgpgzrenco91wkmp6tgd2pj  redis.1      redis:3.2.5-alpine  chao-v  Running        Running 5 minutes ago   
-19iia6u70zsa1ri58f5nkvzov   \_ redis.1  redis:3.0.7-alpine  chao-v  Shutdown       Shutdown 7 minutes ago  
-9a822ab1dc9fc9cr3kv0x5osi  redis.2      redis:3.2.5-alpine  chao-v  Running        Running 4 minutes ago   
-641ad3zd7m7j9o6rmncpq61ih   \_ redis.2  redis:3.0.7-alpine  chao-v  Shutdown       Shutdown 4 minutes ago  
-bys277rw7e9cqz3hwf62nn44b  redis.3      redis:3.2.5-alpine  chao-v  Running        Running 4 minutes ago   
-26t3etvukx440tht3kw5wib77   \_ redis.3  redis:3.0.7-alpine  chao-v  Shutdown       Shutdown 4 minutes ago  
+ID                         NAME         IMAGE               NODE       DESIRED STATE  CURRENT STATE                ERROR
+9b89vrug0wz1nw28840rv5r57  redis.1      redis:3.2.5-alpine  manager01  Running        Running about a minute ago   
+8bqo8nni0pi2o3c3nog5r0u7v   \_ redis.1  redis:3.0.7-alpine  manager01  Shutdown       Shutdown about a minute ago  
+3x6m9vmrw20kaittw28slwtmj  redis.2      redis:3.2.5-alpine  worker02   Running        Running about a minute ago   
+cb4b3iowzhmi8bk2izok4t2e6   \_ redis.2  redis:3.0.7-alpine  worker02   Shutdown       Shutdown about a minute ago  
+cozd08m25sg3eip9cimsc6bc7  redis.3      redis:3.2.5-alpine  manager01  Running        Running 42 seconds ago       
+eb8f2m36c00h3kxpjfhctre32   \_ redis.3  redis:3.0.7-alpine  worker01   Shutdown       Shutdown 56 seconds ago
 ```
 
 可以看到有三个镜像为`redis:3.0.7-alpine`的任务状态为`Shutdown`，三个镜像为`redis:3.2.5-alpine`的任务状态为`Running`。说明滚动更新已完成。
@@ -518,23 +518,23 @@ CONTAINER ID        IMAGE                COMMAND                  CREATED       
 
 ## 下线某个节点
 
-在前面的步骤中，所有的节点都处于运行状态且可用性为`ACTIVE`。swarm 管理器可以将任务分配给任何`ACTIVE`节点，所以到目前为止，所有节点都可以接收任务。
+在前面的步骤中，所有的节点都处于运行状态且可用性为`ACTIVE`。swarm 管理器可以将任务分配给任何可用性为 `ACTIVE` 的节点，所以到目前为止，所有节点都可以接收任务。
 
-有时候，比如计划的维护时间，你需要将节点的可用性设为`DRAIN`。可用性为`DRAIN`的节点不会从 swarm 接收任何新任务。同时，管理器将停止运行在该节点上的任务，并在另外可用性为`ACTIVE`的节点上启动相应的任务副本。
+有时候，比如到了计划的维护时间，你需要将节点的可用性设为`DRAIN`。可用性为`DRAIN`的节点不会从 swarm 接收任何新任务。同时，管理器将停止运行在该节点上的任务，并在另外可用性为 `ACTIVE` 的节点上启动相应的任务副本。
 
 ### 确认所有节点都是活跃可用的
 
 ```shell
 $ docker node ls
-ID                           HOSTNAME  STATUS  AVAILABILITY  MANAGER STATUS
-97f30o9pu20kpazecn54qn00n    chao-v    Ready   Active        
-9d4x1kfnqqoor4pb2dsnsonl2 *  chao-v    Ready   Active        Leader
-9mu0c1319pmytgeuak8874zz9    chao-v    Ready   Active 
+ID                           HOSTNAME   STATUS  AVAILABILITY  MANAGER STATUS
+4rkvaeauhftolat98u5ty01iz    worker02   Ready   Active        
+7ik7wqhe5wcag8k5tp816c7ck *  manager01  Ready   Active        Leader
+cashcvy4qzcq3lvtnix4trqu7    worker01   Ready   Active  
 ```
 
-### 启动前面提到的`redis`服务（如果该服务没有运行）
+### 启动前面提到的 `redis` 服务（如果该服务没有运行）
 
-我这边`redis`服务一直处于运行状态，所以不需要重新启动。如果你的没有在运行，那就重新启动它吧：
+我这边 `redis` 服务一直处于运行状态，所以不需要重新启动。如果你的没有在运行，那就重新启动它吧：
 
 ```shell
 $ docker service create --replicas 3 --name redis --update-delay 10s redis:3.2.5-alpine
@@ -543,44 +543,54 @@ $ docker service create --replicas 3 --name redis --update-delay 10s redis:3.2.5
 ### 查看任务在各节点的分配情况
 
 ```shell
-$ docker service ps --no-resolve redis 
-ID                         NAME                             IMAGE               NODE                       DESIRED STATE  CURRENT STATE         ERROR
-0bjgpgzrenco91wkmp6tgd2pj  c3hrsui7svtmzpxxars48tmtx.1      redis:3.2.5-alpine  9d4x1kfnqqoor4pb2dsnsonl2  Running        Running 2 hours ago   
-9a822ab1dc9fc9cr3kv0x5osi  c3hrsui7svtmzpxxars48tmtx.2      redis:3.2.5-alpine  9mu0c1319pmytgeuak8874zz9  Running        Running 2 hours ago   
-bys277rw7e9cqz3hwf62nn44b  c3hrsui7svtmzpxxars48tmtx.3      redis:3.2.5-alpine  9mu0c1319pmytgeuak8874zz9  Running        Running 2 hours ago   
+$ docker service ps redis 
+ID                         NAME         IMAGE               NODE       DESIRED STATE  CURRENT STATE           ERROR
+9b89vrug0wz1nw28840rv5r57  redis.1      redis:3.2.5-alpine  manager01  Running        Running 4 minutes ago   
+8bqo8nni0pi2o3c3nog5r0u7v   \_ redis.1  redis:3.0.7-alpine  manager01  Shutdown       Shutdown 4 minutes ago  
+3x6m9vmrw20kaittw28slwtmj  redis.2      redis:3.2.5-alpine  worker02   Running        Running 3 minutes ago   
+cb4b3iowzhmi8bk2izok4t2e6   \_ redis.2  redis:3.0.7-alpine  worker02   Shutdown       Shutdown 4 minutes ago  
+cozd08m25sg3eip9cimsc6bc7  redis.3      redis:3.2.5-alpine  manager01  Running        Running 3 minutes ago   
+eb8f2m36c00h3kxpjfhctre32   \_ redis.3  redis:3.0.7-alpine  worker01   Shutdown       Shutdown 3 minutes ago  
 ```
 
-可以看到有一个任务在管理节点上运行，有两个任务在其中一个工作节点上运行。这种分配不是固定的，你的实验结果很可能和我的不同。
+可以看到有两个任务在管理节点上运行，有一个任务在其中一个工作节点上运行。这种分配不是固定的，你的实验结果很可能和我的不同。
 
->   注：我把输出信息中状态为`Shutdown`的旧版本`redis`任务，对这里没影响。另外，我用`--no-resolve`参数输出节点的 id，是因为我的三个节点的 hostname 都一样，只能根据 id 区分。如果你的各节点 hostname 不同，可以不加`--no-resolve`参数，直接使用节点的 hostname 区分各节点。
+>   注：上输出信息中，状态为 `Shtudown` 的任务时前面滚动更新时遗留下来任务。不要疑惑。
 
 ### 下线一个被分配了任务的节点
 
-根据前面的输出找到一个分配了任务的工作节点。将其下线：
+将分配了任务的工作节点 `worker02` 下线：
 
 ```shell
-$ docker node update --availability drain 9mu0c
-9mu0c
+$ docker node update --availability drain worker02
+worker02
 ```
-
-`9mu0c`是一个工作节点的 id 前五位。在 Docker 的世界里，只要不造成误会，id 值可以用前几位代替。
 
 ### 查看被下线节点的详细信息
 
 ```shell
 $ docker node ls
-ID                           HOSTNAME  STATUS  AVAILABILITY  MANAGER STATUS
-97f30o9pu20kpazecn54qn00n    chao-v    Ready   Active        
-9d4x1kfnqqoor4pb2dsnsonl2 *  chao-v    Ready   Active        Leader
-9mu0c1319pmytgeuak8874zz9    chao-v    Ready   Drain     
-$ docker node inspect --pretty 9mu0c
-ID:			9mu0c1319pmytgeuak8874zz9
-Hostname:		chao-v
-Joined at:		2016-11-14 01:16:35.232165074 +0000 utc
+ID                           HOSTNAME   STATUS  AVAILABILITY  MANAGER STATUS
+4rkvaeauhftolat98u5ty01iz    worker02   Ready   Drain         
+7ik7wqhe5wcag8k5tp816c7ck *  manager01  Ready   Active        Leader
+cashcvy4qzcq3lvtnix4trqu7    worker01   Ready   Active     
+$ docker node inspect --pretty worker02
+ID:			4rkvaeauhftolat98u5ty01iz
+Hostname:		worker02
+Joined at:		2016-12-22 14:51:02.806948804 +0000 utc
 Status:
  State:			Ready
  Availability:		Drain
-...
+Platform:
+ Operating System:	linux
+ Architecture:		x86_64
+Resources:
+ CPUs:			2
+ Memory:		1.937 GiB
+Plugins:
+  Network:		bridge, host, null, overlay
+  Volume:		local
+Engine Version:		1.12.3
 ```
 
 可以看到该节点的状态为`Ready`，但可用性为`Drain`。
@@ -588,16 +598,18 @@ Status:
 ### 再次查看任务的分配情况
 
 ```shell
-$ docker service ps  redis 
-ID                         NAME         IMAGE               NODE    DESIRED STATE  CURRENT STATE           ERROR
-0bjgpgzrenco91wkmp6tgd2pj  redis.1      redis:3.2.5-alpine  chao-v  Running        Running 2 hours ago       
-eq1vr0emw8guf5dmy1uy1uo6y  redis.2      redis:3.2.5-alpine  chao-v  Running        Running 9 minutes ago   
-9a822ab1dc9fc9cr3kv0x5osi   \_ redis.2  redis:3.2.5-alpine  chao-v  Shutdown       Shutdown 9 minutes ago   
-4xgnj54ih2ed4aaii3sf16xk7  redis.3      redis:3.2.5-alpine  chao-v  Running        Running 9 minutes ago   
-bys277rw7e9cqz3hwf62nn44b   \_ redis.3  redis:3.2.5-alpine  chao-v  Shutdown       Shutdown 9 minutes ago  
+$ docker service ps redis 
+ID                         NAME         IMAGE               NODE       DESIRED STATE  CURRENT STATE                ERROR
+9b89vrug0wz1nw28840rv5r57  redis.1      redis:3.2.5-alpine  manager01  Running        Running 8 minutes ago        
+8bqo8nni0pi2o3c3nog5r0u7v   \_ redis.1  redis:3.0.7-alpine  manager01  Shutdown       Shutdown 9 minutes ago       
+1lwslgvlq631v14urjuo2vge2  redis.2      redis:3.2.5-alpine  worker01   Running        Running about a minute ago   
+3x6m9vmrw20kaittw28slwtmj   \_ redis.2  redis:3.2.5-alpine  worker02   Shutdown       Shutdown about a minute ago  
+cb4b3iowzhmi8bk2izok4t2e6   \_ redis.2  redis:3.0.7-alpine  worker02   Shutdown       Shutdown 8 minutes ago       
+cozd08m25sg3eip9cimsc6bc7  redis.3      redis:3.2.5-alpine  manager01  Running        Running 8 minutes ago        
+eb8f2m36c00h3kxpjfhctre32   \_ redis.3  redis:3.0.7-alpine  worker01   Shutdown       Shutdown 8 minutes ago 
 ```
 
-可以看到，swarm 管理器停止了`Drain`工作节点上的两个任务，并在另外一个工作节点上两个新任务。
+可以看到，swarm 管理器停止了`workd02`工作节点上的任务，并在 `work01` 上创建了一个新任务。
 
 ### 再次将被下线的节点重置为活动状态
 
