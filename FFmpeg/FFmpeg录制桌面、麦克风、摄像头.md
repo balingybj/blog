@@ -75,3 +75,16 @@ $ ffmpeg -thread_queue_size 128 -f x11grab -video_size 1920x1080 -framerate 30 -
 补一个录制到的视频截图：![录制桌面+摄像头+麦克风](./.images/test6.mp4_20161230_194737.220.jpg)
 
 估计很多教程视频都是这么录制的。把录制的视频推一下流，就能直播写代码，直播玩游戏了。
+
+
+
+再补一个成功推流后在手机上观看的截图：
+
+![](./.images/784498464325411919.jpg)
+
+推流命令：
+
+```shell
+$ ffmpeg -thread_queue_size 128 -f x11grab -video_size 1920x1080 -framerate 30 -i :0.0 -f video4linux2 -video_size 400x300 -framerate 30 -i /dev/video0 -f alsa -ac 2  -i pulse -filter_complex '[0:v][1:v]overlay=x=main_w-overlay_w-10:y=main_h-overlay_h-10[out]' -map '[out]' -map 2:a  -vcodec libx264 -vprofile baseline -acodec aac -strict -2 -maxrate 3000k -b:a 128k -f flv rtmp://192.168.1.12:1935/myapp/stream2
+```
+
