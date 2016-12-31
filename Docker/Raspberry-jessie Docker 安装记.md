@@ -188,7 +188,7 @@ $ sudo usermod -aG docker ${USER}
 $ logout
 ```
 
-然后在登入系统，验证：
+然后再登入系统，验证：
 
 ```shell
 $ docker version
