@@ -6,7 +6,15 @@
 
 虽然之前用过 `FFmppeg` 的转码服务，但是采集视频和录音还真没干过。折腾了一天，终于知道了一些套路。先记录下来。下一步试试实时推送到树莓派上的 rtmp 服务上。
 
-我的系统为`Ubuntu 16.04 Desktop x64`
+我的系统为`Ubuntu 16.04 Desktop x64`。`FFmpeg` 版本为Ubuntu 官方仓库下载的 2.8.10。
+
+```shell
+$ ffmpeg -version
+ffmpeg version 2.8.10-0ubuntu0.16.04.1 Copyright (c) 2000-2016 the FFmpeg developers
+built with gcc 5.4.0 (Ubuntu 5.4.0-6ubuntu1~16.04.4) 20160609
+```
+
+
 
 ## 录制麦克风
 
@@ -88,3 +96,4 @@ $ ffmpeg -thread_queue_size 128 -f x11grab -video_size 1920x1080 -framerate 30 -
 $ ffmpeg -thread_queue_size 128 -f x11grab -video_size 1920x1080 -framerate 30 -i :0.0 -f video4linux2 -video_size 400x300 -framerate 30 -i /dev/video0 -f alsa -ac 2  -i pulse -filter_complex '[0:v][1:v]overlay=x=main_w-overlay_w-10:y=main_h-overlay_h-10[out]' -map '[out]' -map 2:a  -vcodec libx264 -vprofile baseline -acodec aac -strict -2 -maxrate 3000k -b:a 128k -f flv rtmp://192.168.1.12:1935/myapp/stream2
 ```
 
+不过发现有 4 秒延时，对于局域网环境，这个延时太高了。可能是树莓派的配置太低，或者它的无线网卡带宽不够。下次改成 720P 或者使用树莓派的有线网卡试试。
