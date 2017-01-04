@@ -96,7 +96,9 @@ $ docker run --rm -it rtmp:nginx-1.8.1 /bin/sh
 
 进去确认后发现用户和用户组创建成功，没毛病。百度到的结果都是在说创建用户的问题。我后来将基础镜像换成 alpine 也没用。我好像遇到了很多网友没经历过的大坑。这时候，我的那个弱鸡 VPN 好像可以用了，我必须的 Google 一下。用关键词 docker + 报错信息，终于找到了答案。
 
-Google 到的这两个页面：
+Google 到的这三个个页面：
+
+[HowTo: Put nginx and PHP to jail in Debian 8 - blog.dornea.nu](http://blog.dornea.nu/2016/01/15/howto-put-nginx-and-php-to-jail-in-debian-8/)
 
 [Slim application containers (using Docker) | fosiki](http://fosiki.com/blog/2015/04/28/slim-application-containers-using-docker/)
 
@@ -151,4 +153,4 @@ systemd+            30340               30156               0                   
 
 但，还是有个小疑问：既然我 Nginx 是静态编译的，为什么访问用户信息时还需要加载额外的库呢？Nginx 是以何种方式调用访问用户信息的这种功能的呢？或者根本不是 Nginx 发起的调用，而是系统在验证？
 
-Google 到的那两个页面都提到了用 `strace` 或 `inotifywait` 来跟踪程序的行为。学习一下，便于以后排查这种类似的问题。
+Google 到的那三个页面都提到了用 `strace` 或 `inotifywait` 来跟踪程序的行为。学习一下，便于以后排查这种类似的问题。
