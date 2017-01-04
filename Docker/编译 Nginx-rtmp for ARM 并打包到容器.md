@@ -147,6 +147,10 @@ systemd+            30340               30156               0                   
 
 果然可以了。
 
+## 仓库地址
+
+所有文件已经放到 GitHub 上。仓库地址在[这里](https://github.com/shimachao/Nginx-rtmp-for-ARM-1.8.1)。
+
 ## TODO
 
 问题解决了。下一步把这个镜像上传到仓库保存起来。
