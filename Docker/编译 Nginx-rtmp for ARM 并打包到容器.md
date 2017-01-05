@@ -147,9 +147,11 @@ systemd+            30340               30156               0                   
 
 果然可以了。
 
-## 仓库地址
+## 仓库和 Docker Hub地址
 
-所有文件已经放到 GitHub 上。仓库地址在[这里](https://github.com/shimachao/Nginx-rtmp-for-ARM-1.8.1)。
+所有文件已经放到 GitHub 上，仓库地址在[这里](https://github.com/shimachao/Nginx-rtmp-for-ARM-1.8.1)。
+
+你也可以直接从 docker hub 上 pull 我构建好的容器，地址在[这里](https://hub.docker.com/r/shimachao/rtmp-for-arm/)。
 
 ## TODO
 
