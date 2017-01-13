@@ -57,7 +57,7 @@ deb-src http://ftp.xdlinux.info/raspbian/raspbian/ jessie main non-free contrib
 
 #### 3. 国内对 Docker 官方源的镜像仓库漏掉了 Raspbian
 
-Docker 官方维护的仓库地址是`https://apt.dockerproject.org/`。USTC 、清华和阿里源都有其镜像源。但是我查看了一下，它们并不是完成和官方仓库一致，居然漏掉了 raspbian-jessie 系统。可能是国内在 Raspbian 上用 Docker 的人太少，它们觉得没必要。
+Docker 官方维护的仓库地址是`https://apt.dockerproject.org/`。USTC 、清华和阿里源都有其镜像源。但是我查看了一下，它们并不是完全和官方仓库一致，居然漏掉了 raspbian-jessie 系统。可能是国内在 Raspbian 上用 Docker 的人太少，它们觉得没必要。
 
 #### 4. 阿里源上找到曙光
 
@@ -173,7 +173,7 @@ $ $ gpg -a --export F76221572C52609D | sudo apt-key add -
 安装：
 
 ```shell
-$ sudo apt-get install docker-engline
+$ sudo apt-get install docker-engine
 ```
 
 添加当前用户到 docker 用户组：
