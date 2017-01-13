@@ -51,7 +51,7 @@ deb-src http://ftp.xdlinux.info/raspbian/raspbian/ jessie main non-free contrib
 
 #### 2. Docker 官方仓库网速太慢
 
-一般各个 Linux 发行版官方系统源里维护的 Docker 版本都比较低。另外 Docker 官方自己有一个 Docker Englie 仓库，地址是`https://apt.dockerproject.org/`，里面为各大主流的系统平台维护了 Docker Engline 安装包，而且版本都是与时俱进的。各平台的安装文档参加 Docker 官方文档——[Install Docker Engline](https://docs.docker.com/engine/installation/)。其中 Raspbian 的安装过程参加[Install on Raspbian](https://docs.docker.com/engine/installation/linux/raspbian/)。官方还提供了一个安装脚本，可以自动化在各个 Linux 发行版上的安装 Docker 过程。运行`$ curl -sSL https://get.docker.com/ | sudo sh`既可。
+一般各个 Linux 发行版官方系统源里维护的 Docker 版本都比较低。另外 Docker 官方自己有一个 Docker Englie 仓库，地址是`https://apt.dockerproject.org/`，里面为各大主流的系统平台维护了 Docker Engline 安装包，而且版本都是与时俱进的。各平台的安装文档参加 Docker 官方文档——[Install Docker Engline](https://docs.docker.com/engine/installation/)。其中 Raspbian 的安装过程参加[Install on Raspbian](https://docs.docker.com/engine/installation/linux/raspbian/)。官方还提供了一个安装脚本，可以自动化在各个 Linux 发行版上的安装 Docker 过程。运行`$ curl -sSL https://get.docker.com/ | sudo sh` 既可。
 
 手动安装过程和自动化脚本安装过程都是三个过程：在系统里添加 docker 官方源的证书和公钥，添加官方源地址，安装 Docker。但是我在 Raspbian 上不管是手动还是运行自动化安装脚本，由于网络的原因，安装包下载到 20% 就会卡死。无奈。
 
@@ -67,7 +67,7 @@ Docker 官方维护的仓库地址是`https://apt.dockerproject.org/`。USTC 、
 $ curl -sSL http://acs-public-mirror.oss-cn-hangzhou.aliyuncs.com/docker-engine/internet | sudo sh
 ```
 
-结果报错，使我不是合法的 64 位平台。看来检测的时候只检测了 Linux x64 平台，ARM 被跳过了。
+结果报错，说我不是合法的 64 位平台。看来检测的时候只检测了 Linux x64 平台，ARM 被跳过了。
 
 我没任何办法了，既然阿里提供了这个自动化的安装脚本，说明它是有同步 Docker 官方源。死马当活马医，万一阿里源在通过 Docker 官方仓库时忘了漏掉 Raspbian 平台呢？阿里这么大个公司，漏掉某个东西很正常。USTC 和清华源都是学生组织，资源有限，才会主动漏掉 Raspbian，只同步需求比较大的。
 
