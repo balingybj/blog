@@ -55,3 +55,9 @@ TTL 定义了 IP 数据报在网络上的最长生存时间。初始值由源主
 
 这个问题稍稍有点复杂，所以放到另一篇博文中了。见《IP 数据报的分片和重组》
 
+## 参考
+
+《TCP/IP 详解卷一：协议》 W. Richard Stevens
+
+《TCP/IP 指南卷一：底层核心协议》 Charles M. Kozierok
+

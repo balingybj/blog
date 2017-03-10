@@ -79,3 +79,9 @@ TCP 建立连接需要 3 个报文，终止一个连接则需要 4 个报文。�
 ![TCP 连接关闭时的报文交换](./.images/TCP 连接关闭时的分组交换.png)
 
 ACK 中的确认号是该端期望收到对端后续数据的序列号，因为 FIN 报文消耗了一个序列号，所以 ACK 中的确认号是对应 SYN 的序列号加 1。
+
+## 参考
+
+《UNIX 网络编程卷一：套接字互联网API》 W. Richard Stevens,Bill Fenner,Andrew M. Rudoff
+
+《TCP/IP 指南卷一：底层核心协议》 Charles M. Kozierok
