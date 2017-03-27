@@ -27,11 +27,11 @@
 
 ### Image ID
 
-每个层在被创建时都会给一个 ID。该 ID 是一个 256 比特的 16 进制的串，例如，`a9561eb1b190625c9adb5a9513e72c4dedafc1cb2d4c5236c9a6957ec7dfd5a9`。Image ID 应该足够随机，以确保是全局唯一的。从 `/dev/urandom` 读取 32 个字节就能满足使用需求。或者，还可以对镜像内容使用加密散列函数，将得到的结果作为镜像的 ID。由实现者决定选择哪种。
+每个层在被创建时都会给一个 ID。该 ID 是一个 256 比特的 16 进制的串，例如，`a9561eb1b190625c9adb5a9513e72c4dedafc1cb2d4c5236c9a6957ec7dfd5a9`。Image ID 应该足够随机，以确保全局唯一。从 `/dev/urandom` 读取 32 个字节就能满足使用需求。或者，还可以对镜像内容使用加密散列函数，将得到的散列结果作为镜像的 ID。由实现者决定选择哪种。
 
 ### Image Parent（父镜像）
 
-大多数的层元信息结构包含一个`parent` 字段，指向该层基于的另一层。一个镜像包含一个单独的 JSON 元数据文件，和相对于父镜像文件系统的变更集合。除了*Image Parent*， 通常也用术语 *Image Ancestor* 和 *Image Descendant*。
+大多数层的元信息结构都包含一个`parent` 字段，指向该镜像层直接父镜像。一个镜像包含一个单独的 JSON 元数据文件，和相对于父镜像文件系统的变更集合。除了*Image Parent*， 通常也用术语 *Image Ancestor* 和 *Image Descendant*。
 
 ### Image Checksum（镜像校验和）
 
