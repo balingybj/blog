@@ -10,7 +10,7 @@ QML 将 UI 分解成很小的元素，这些元素又可以组合成组件。QML
 
 假如我们要创建一个简单的界面：显示一张图片，图片下面有一段文字描述。这种界面在 QML 中的结构如下图所示：
 
-![QML 元素的层次结构](.images/QML 元素的层次结构.png)
+![QML 元素的层次结构](.images/QML元素的层次结构.png)
 
 可以看出这种层次结构就是树形结构。
 
@@ -371,7 +371,7 @@ Item {
 
 我们在测试代码中直接像使用普通元素一样使用了我们刚才封装的`MyButton`组件。并在点击事件的处理中更改文本元素的文字内容。效果如下：
 
-![MyButton 组件测试](.images/mybutton 测试.jpg)
+![MyButton 组件测试](.images/mybutton测试.jpg)
 
 你还可以在封装时给`MyButton`提供更多装饰，比如不同状态提供不同的外观，让它看起来更像一个按钮。
 
@@ -456,7 +456,7 @@ Rectangle {
 
 可以看出这种简单的变化只是在`onClicked`信号处理中改变了元素的相关属性。效果如下图：
 
-![简单变换](.images/simple transformations.png)
+![简单变换](.images/simple_transformations.png)
 
 左边为初始状态，右边为在三张图片上点击若干次后的状态。
 
