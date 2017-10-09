@@ -84,7 +84,7 @@ Text {
         font.family: "Ubuntu"
         font.pixelSize: 24
 
-        KeyNavigation.tab: otherLabel // KeyNavigation 是关联属性
+        KeyNavigation.tab: otherLabel // KeyNavigation 是附加属性
 
         onHeightChanged: console.log('height:', height) // 属性变化的信号处理器
 
@@ -102,7 +102,7 @@ Text {
 -   给元素添加一个自定义属性（也就是元素原来没有的，我们自己添加的）可以通过修饰发 `property` 修饰符，后跟类型、名称和可选的初始值（格式为：`property <type> <name> : <value>`）来指定。如果没有给定值，将使用一个系统初始值。
 -   另一种声明属性的重要方式是通过 `alias` 关键字（属性别名）（`property alias <name> : <reference>`）。`alias` 可以让我们将一个对象的属性或对象本身的可见性提升到外层作用域。后面我们封装组件时将使用这个技术将内嵌元素的属性或 id 导出到根级别。属性别名不需要类型，它将使用所引用属性或对象的类型。
 -   有些属性属于分组属性。该特性表示属性是有多个需要设置的值的或者一些相关属性需要被组合到一起。比如上面示例代码中的字体，字体一般有字体族，字体大小等。另一种声明分组属性的格式是 `font {family: "Ubuntu"; pixelSize : 24}`。
--   有些属性与元素本身相关联，不需要通过 id 而是通过元素名引用。这主要针对全局相关元素，它们在整个应用中只有一个实例（比如键盘输入）。格式为 ``<Element>.<property>: <value>`。 
+-   附加属性，不需要通过 id 而是通过元素名引用。这主要针对全局相关元素，它们在整个应用中只有一个实例（比如键盘输入）。格式为 ``<Element>.<property>: <value>`。 
 -   对每一个属性，你都可以提供一个信号处理器。该信号处理器将在属性发生更改后被调用。比如上面的代码示例中，我们想在每次 `Height` 属性发生变化时通过内置的控制台打印一次消息，于是给 `onHeightChanged`添 信号停机了一个处理器。也就是 `onHeightChanged: console.log('height:', height)`。
 
 ### 脚本
@@ -785,5 +785,248 @@ ColorSquare {
 
 ## 输入元素
 
+前面我们接触到了`MouseArea`用于接收鼠标输入，而本节我们来看看怎么接收键盘输入。
 
+### TextInput 单行文本输入
+
+`Textinput`可以让用户输入一行文字。可以用`validator`和`imputMask`对用户输入的内容作出限制。还有一些其他属性用于控制文字的显示效果。和其他框架中的文本输入控件不同，`Textinput`不会显示边框，除了文字和光标，不会显示任何其他东西。下面是示例：
+
+```qml
+import QtQuick 2.6
+
+Rectangle {
+    width: 200
+    height: 80
+    color: "linen"
+
+    TextInput {
+        x: 8; y: 8
+        width: 96; height: 20
+        focus: true
+        text: "Text Input 1"
+    }
+
+    TextInput {
+        x: 8; y: 36
+        width: 96; height: 20
+        text: "Text Input 2"
+    }
+}
+```
+
+![Textinput](.images/textinput.jpg)
+
+### 用 Tab 键在不同`TextInput`元素之间切换焦点
+
+`Textinput`默认在里点击它时获得焦点。当现实中我们使用到的软件界面都可以用 Tab 键来切换焦点到不同输入框，比如在我一个输入框里完成输入后，按一下 Tab 将自动切换到下一个输入框进行输入。QML 也支持这样，通过使用`KeyNavigation.tab`属性来实现。例如下面的例子可以用 Tap 键在三个`Textinput`之间来回切换焦点：
+
+```qml
+import QtQuick 2.6
+
+Rectangle {
+    width: 200
+    height: 80
+    color: "linen"
+
+    TextInput {
+        id: input1
+        x: 8; y: 8
+        width: 96; height: 20
+        focus: true
+        text: "Text Input 1"
+        KeyNavigation.tab: input2
+    }
+
+    TextInput {
+        id: input2
+        x: 8; y: 36
+        width: 96; height: 20
+        text: "Text Input 2"
+        KeyNavigation.tab: input3
+    }
+
+    TextInput {
+        id: input3
+        x: 8; y: 62
+        width: 96; height: 20
+        text: "Text Input 3"
+        KeyNavigation.tab: input1
+    }
+}
+```
+
+input1 有一个属性`focus: true`表示顶层 Rectangle 获得焦点时由 input1 先获得焦点。
+
+### 用`TextInput`封装一个输入框
+
+前面说了`TextInpput`除了显示用户输入的文字和光标外，什么也不显示。但现实中我们使用到的输入框都会有一个边界，有的还有背景颜色。`TextInput`本身不支持这些，但我们可以结合`Rectangle`封装一个。如下：
+
+```qml
+// MyTextinput.qml
+import QtQuick 2.6
+
+Rectangle {
+    width: 96; height: 20
+    border.color: "#3C3C3C"
+
+    property alias text: input.text
+
+    TextInput {
+        id: input
+        anchors.fill: parent
+        anchors.margins: 4
+        focus: true
+    }
+}
+```
+
+再前一节的示例中的`TextInput`改成我们的`MyTextinput`试试：
+
+```qml
+import QtQuick 2.6
+
+Rectangle {
+    width: 200
+    height: 90
+    color: "linen"
+
+    MyTextInput {
+        id: input1
+        x: 8; y: 8
+        focus: true
+        text: "Text Input 1"
+        KeyNavigation.tab: input2
+    }
+
+    MyTextInput {
+        id: input2
+        x: 8; y: 36
+        text: "Text Input 2"
+        KeyNavigation.tab: input3
+    }
+
+    MyTextInput {
+        id: input3
+        x: 8; y: 62
+        text: "Text Input 3"
+        KeyNavigation.tab: input1
+    }
+}
+```
+
+效果如下：
+
+![自己封装的输入框](.images/MyTextInput.jpg)
+
+看起来像那么回事。但是你再试试用 Tab 键切换焦点，好像不行了。这是为啥？
+
+这是因为我们封装后的`MyTextInput`，里面内嵌的子元素才是`TextInput`。而我们的测试代码中`KeyNavigation.tab: input2`设置的焦点切换目标是顶层的`MyTextInput`，而`MyTextInout`并没有进一步将焦点传递给内嵌的子元素。为了解决这个问题，QML 提供了`FocusScope`元素。请看下一节。
+
+### FocusScope 焦点区域
+
+`FocusScope`是专门用来处理封装组件时焦点问题的。`FocusScope`在获得焦点时会将焦点传递给最深层的最后一个`focus`属性为true的子元素。于是我们用`FocusScope`该改进我们的输入框组件，叫它`MyTextInputV2`：
+
+```qml
+// MyTextInputV2.qml
+import QtQuick 2.6
+
+FocusScope {
+    property alias text: input.text
+    Rectangle {
+        width: 96; height: 20
+        border.color: "#3C3C3C"
+        TextInput {
+            id: input
+            anchors.fill: parent
+            anchors.margins: 4
+            focus: true
+        }
+    }
+}
+
+```
+
+然后在我们的测试代码中的`MyTextInput`替换为新的`MyTextInputV2`：
+
+```qml
+import QtQuick 2.6
+
+Rectangle {
+    width: 200
+    height: 90
+    color: "linen"
+
+    MyTextInputV2 {
+        id: input1
+        x: 8; y: 8
+        focus: true
+        text: "Text Input 1"
+        KeyNavigation.tab: input2
+    }
+
+    MyTextInputV2 {
+        id: input2
+        x: 8; y: 36
+        text: "Text Input 2"
+        KeyNavigation.tab: input3
+    }
+
+    MyTextInputV2 {
+        id: input3
+        x: 8; y: 62
+        text: "Text Input 3"
+        KeyNavigation.tab: input1
+    }
+}
+```
+
+显示的效果不变，但现在我们又可以自由的用 Tab 切换焦点了。
+
+### TextEdit 多行文本编辑
+
+`TextEdit`和`TextInput`很像，只不过它可以输入多行文字。而且没有那些对输入文字做约束的属性。
+
+### Keys 按键元素
+
+附加属性`Keys`允许用户根据特定的按键执行相关指令。例如用上下左右来控制一个色块的移动，用`PgUp`、`PgDn`键控制色块的缩放。实现如下：
+
+```qml
+import QtQuick 2.6
+
+ColorSquare {
+    width: 400; height: 200
+    color:"#3C3C3C"
+
+    GreenSquare {
+        id: box
+        x: 8; y:8
+        width:50
+        focus: true
+        Keys.onPressed: {
+            switch(event.key) {
+                case Qt.Key_Left:
+                    box.x -= 8;
+                    break;
+                case Qt.Key_Right:
+                    box.x += 8;
+                    break;
+                case Qt.Key_Up:
+                    box.y -= 8;
+                    break;
+                case Qt.Key_Down:
+                    box.y += 8
+                    break;
+                case Qt.Key_PageUp:
+                    box.scale += 0.2
+                    break;
+                case Qt.Key_PageDown:
+                    box.scale -= 0.2
+                    break;
+            }
+        }
+    }
+}
+```
+
+![Keys 示例](.images/keys.jpg)
 
