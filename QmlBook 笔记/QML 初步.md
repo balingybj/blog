@@ -659,7 +659,131 @@ ColorSquare {
 
 ## 元素的布局
 
+QML 可以用 anchors (锚)对元素进行灵活的布局。锚定的概念是`Item`的基础属性，适用于 QML 中所有的可视化元素。
 
+锚是现实中的概念。引用百度百科的解释。
+
+>   ![现实中的锚](.images/锚.jpg)
+>
+>   锚：钢铁制的停船器具，用铁链连在船上，抛到水底，可以使船停稳。
+
+QML 中的锚也是类似的概念，它能决定元素的定位，比设置元素的几何属性更强大。
+
+现实中的锚一端连着轮船，一端连着海底或者礁石，也就是锚在物理位置上关联了两个对象。而 QML 中的锚也是两个元素之间关联的概念。
+
+和现实中的锚不同的是：QML 中的元素一般有6条锚线（顶部、底部、左、右、水平中线、垂直中线）。对于`Text`元素，里面的文本还有一个基线锚。
+
+![QML 中的锚](.images/anchors.png)
+
+每条锚线都有一个偏移量。对于顶部、底部、左侧、右侧锚线，它叫边距。对于水平中线、垂直中线和基线，它叫偏移量。
+
+`Item`的锚属性叫`anchors`，但它是个分组属性。除了直接设置 6 条锚线的`anchors.top`、`anchors.bottom`、`anchors.left`、`anchors.right`、`anchors.horizontalCenter`、`anchors.verticalCenter`属性。还有一些更方便的辅助属性`anchors.fill`、`anchors.margins`、`anchors.leftMargin`、`horizontalCenterOffset`等。去查官方文档吧。
+
+接下来的示例我们将展示用锚来控制一个小的蓝色块和一个大的绿色块之间的布局关系。为了示例方便，我们先封装一个绿色块和一个蓝色块组件。
+
+```qml
+// GreenSquare.qml
+ColorSquare {
+    color: "#67C111"
+    width: 100
+    height: width
+}
+```
+
+```qml
+// BlueSquare.qml
+import QtQuick 2.6
+
+ColorSquare {
+    color: "#00BDE3"
+    width: 48
+    height: width
+
+    property alias text: label.text 
+    Text {
+        id: label
+        anchors.centerIn: parent
+        color: "white"
+        font.family: "Ubuntu"
+        font.pixelSize: 20
+        text: ""
+    }
+}
+```
+
+GreenSquare 和 BlueSquare 都基于前面示例的 ColorSquare。BlueSquare 因为要显示文字，所以嵌套了一个 `Text`，复杂一些。
+
+示例的效果如下：
+
+![锚示例](.images/anchors示例.jpg)
+
+下面是正式示例代码，注意看注释。结合效果图食用更佳：
+
+```qml
+import QtQuick 2.6
+// 一个黑色块来容纳所有示例内容
+ColorSquare {
+    width: 400
+    height: 300
+    color: "#3C3C3C"
+    // Flow 布局用来容纳所有示例块
+    Flow {
+        anchors.fill: parent
+        anchors.margins: 8
+        spacing: 4
+
+		// 用于对比的默认样例
+         GreenSquare {
+            BlueSquare {
+                text: '(0)'
+            }
+        }
+
+        GreenSquare {
+            BlueSquare {
+                anchors.left: parent.left // 将蓝色块的左侧锚线关联到父元素的左侧锚线
+                anchors.leftMargin: 8     // 但是添加 8 个像素的边距
+                anchors.top: parent.top   // 将蓝色块的顶部锚线关联到父元素的顶部锚线
+                anchors.topMargin: 16     // 但是添加 16 个像素的边距
+                text: '(1)'
+            }
+        }
+
+        GreenSquare {
+            BlueSquare {
+                anchors.fill: parent // 将蓝色块填充父元素，也就是一次设定了所有锚线
+                anchors.margins: 16  // 但是所有边距设为 16 个像素
+                text: '(2)'
+            }
+        }
+
+        GreenSquare {
+            BlueSquare {
+                anchors.left: parent.right // 将蓝色块左侧锚线关联到父元素的右侧锚线
+                text: '(3)'
+            }
+        }
+
+        GreenSquare {
+            BlueSquare {
+                anchors.horizontalCenter: parent.horizontalCenter // 将蓝色块的水平中线关联到父元素的水平中线
+                anchors.verticalCenter: parent.verticalCenter // 将蓝色块的垂直中线关联到父元素的垂直中线
+                anchors.verticalCenterOffset: -12 // 但是添加 -12 个像素的偏移量，-表示向上偏移
+                text: '(4)'
+            }
+        }
+
+        GreenSquare {
+            BlueSquare {
+                anchors.centerIn: parent // 将蓝色块定位到父元素的中点，也就是一次设定了水平中线和垂直中线
+                text: '(5)'
+            }
+        }
+    }
+}
+```
+
+## 输入元素
 
 
 
