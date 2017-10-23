@@ -126,3 +126,8 @@ $ ./configure
 $ make
 ```
 
+
+
+## 参考
+
+https://www.qemu.org/download/#source
