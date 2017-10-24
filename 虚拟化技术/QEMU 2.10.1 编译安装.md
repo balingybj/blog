@@ -14,7 +14,7 @@ $ wget https://download.qemu.org/qemu-2.10.1.tar.xz
 
 ### 安装编译工具
 
-由于我是新安装的系统，所以编译和构建工具都没有
+由于我是新安装的系统，所以编译和构建工具都没有。所以先安装一下常用的编译构建工具：
 
 ```shell
 $ sudo apt install gcc
@@ -27,56 +27,149 @@ $ sudo apt install build-essential
 $ sudo apt install automake
 ```
 
+### 查看 QEMU 的编译信息
+
+>   #### 题外话：一般源码的编译过程
+>
+>   在编译之前先来说明一下编译相关的背景知识。一般通过源码编译安装软件包都要运行下面三条命令：
+>
+>   ```shell
+>   $ ./configure
+>   $ make
+>   $ make install
+>   ```
+>
+>   `./configure`是一个脚本会自动检查系统环境，比如编译构建工具是否齐全，源码目录，依赖库目录，安装目录等，系统平台和架构信息，其他编译选项等。这些信息可以保持默认或通过参数传递给 `configure`。然后`configure`会根据这些信息生成一个 `Makefile`文件。`./configure -h`可以查看它的帮助文档。
+>
+>   `make`命令会根据`Makefile`中的信息真正开始编译过程。`make`有一个重要的参数`-j`可以用来指定编译过程可以同时并行多少任务，一般多核 CPU 可以将该参数指定为 CPU 核数来加快编译。
+>
+>   `make install`是将编译好的二进制文件安装到系统上。
+
+在编译 QEMU 之前我们先看一下我们可以配置哪些编译参数：
+
+```shell
+$ cd qemu-2.10.1
+$ ./configure -h
+...
+ --target-list=LIST       set target list (default: build everything)
+                           Available targets: aarch64-softmmu alpha-softmmu
+                           ...
+                           cris-linux-user hppa-linux-user i386-linux-user ...
+                           
+Optional features, enabled with --enable-FEATURE and
+disabled with --disable-FEATURE, default is enabled if available:
+  ...
+  sdl             SDL UI
+  --with-sdlabi     select preferred SDL ABI 1.2 or 2.0
+  gtk             gtk UI
+  --with-gtkabi     select preferred GTK ABI 2.0 or 3.0
+  vte             vte support for the gtk UI
+  curses          curses UI
+  vnc             VNC UI support
+  vnc-sasl        SASL encryption for VNC server
+  vnc-jpeg        JPEG lossy compression for VNC server
+  vnc-png         PNG compression for VNC server
+  cocoa           Cocoa UI (Mac OS X only)
+  virtfs          VirtFS
+  xen             xen backend driver support
+  xen-pci-passthrough
+  brlapi          BrlAPI (Braile)
+  curl            curl connectivity
+  fdt             fdt device tree
+  bluez           bluez stack connectivity
+  kvm             KVM acceleration support
+  ...                    
+
+```
+
+上面我只贴出了部分输出信息。我大致可以知道我们能指定要生成  QEMU 的平台版本，比如 x86 和 arm。还可以指定需要附加功能，其中比较重要的是 sdl、vnc。
+
+###配置编译选项
+
+QEMU 默认编译生成所有平台的版本，为了加快编译速度，这里我只选择了我可能会用到的版本。在`./configure`的`--target-list`的参数中指定。还选择了 sdl、vnc 的等附加功能。
+
+由于这些参数太多，我决定把它们写到一个脚本文件 myconfig 中。
+
+```shell
+#!/bin/sh
+./configure --target-list="arm-softmmu,i386-softmmu,x86_64-softmmu,arm-linux-user,i386-linux-user,x86_64-linux-user" --enable-debug --enable-sdl --enable-gtk --enable-vnc --enable-vnc-jpeg --enable-vnc-png --enable-kvm --enable-spice --enable-curl --enable-snappy --enable-tools
+```
+
+>   --enable-sdl 是必须的，否则用生成的 QEMU 创建的虚拟机没有画面。启动虚拟机时只会显示一行
+>
+>   `VNC server running on`127.0.0.1:5900，这样你就只能通过 VNC 访问虚拟机了。
+>
+>   如果需要用 VNC 访问虚拟机，可以安装 gvncviewer。
+>
+>   ```shell
+>   $ sudo apt install gvncviewer
+>   ```
+>
+>   然后
+>
+>   ```shell
+>   $ gvncviewer 127.0.0.1::5900
+>   ```
+>
+>   就可以看到虚拟机的画面了。
+
+然后给该脚本文件可执行权限：
+
+```shell
+$ sudo chmod +x myconfig
+```
+
+执行
+
+```shell
+$ sudo ./myconfig
+target list       arm-softmmu i386-softmmu x86_64-softmmu arm-linux-user i386-linux-user x86_64-linux-user
+pixman            system
+SDL support       yes (2.0.6)
+GTK support       yes (3.22.24)
+curl support      yes
+VNC support       yes
+VNC SASL support  no
+VNC JPEG support  yes
+VNC PNG support   yes
+...
+```
+
+上面的输出信息表明我们的配置生效了。
+
 ### 安装编译依赖库
 
-这些库是我后面运行`./configure`时提示缺失的。
+这些库是根据前面的`configure`的配置参数，以及我后面运行`./configure`时缺失提示总结的。
 
 ```shell
 $ sudo apt install -y pkg-config
 $ sudo apt install -y libpixman-1-dev
 $ sudo apt install -y libfdt-dev
+$ sudo apt install libsdl2-dev  # 这个是必须的，否则QEMU无法为虚拟机提供图形界面
+$ sudo apt install libsnappy-dev
+$ sudo apt install libgtk-3-dev
+$ sudo apt install libjpeg-turbo8-dev
+$ sudo apt install libcurl4-openssl-dev
+$ sudo apt install libspice-server-dev
 ```
 
 ### 编译
 
 ```shell
-$ cd qemu-2.10.1
-$ ./configure
+$ make -j8
 ```
 
-这条命令很快，只是检测环境生成配置文件。
+由于我电脑是 8 核，所以用`-j8`加快编译。大概一分钟就编译好了。
 
-```shell
-$ make
-```
+>   我前几天没有通过`configure`指定要生成的目标平台，也没有给`make`用`-j`参数。结果编译了二十多分钟。
 
-这才是真正的编译过程，花了大概二十分钟。感觉时间挺长的，所以我用这段时间写下这篇文章用于记录。
-
-编译完后可以在当前目录看可以执行文件`qemu-img`，在子目录` x86_64-softmm`看到`qemu-system-x86_64`可执行文件，在子目录`i386-softmmu`看到可执行文件`qemu-system-i386`。其实名称为`*-softmmu`的子目录下都有一个对应的`qemu-system-*`可执行文件，应该是对应不同架构和平台。
-
-```shell
-$ ls -d *-softmmu
-aarch64-softmmu       microblaze-softmmu  ppc64-softmmu    tricore-softmmu
-alpha-softmmu         mips64el-softmmu    ppcemb-softmmu   unicore32-softmmu
-arm-softmmu           mips64-softmmu      ppc-softmmu      x86_64-softmmu
-cris-softmmu          mipsel-softmmu      s390x-softmmu    xtensaeb-softmmu
-i386-softmmu          mips-softmmu        sh4eb-softmmu    xtensa-softmmu
-lm32-softmmu          moxie-softmmu       sh4-softmmu
-m68k-softmmu          nios2-softmmu       sparc64-softmmu
-microblazeel-softmmu  or1k-softmmu        sparc-softmmu
-```
-
-之前编译这么慢应该也是因为要生成支持这么多平台的可执行文件。下次能不能在`configure`中指定参数，让其只生成 x86 平台的版本，这样应该会快点。
+编译完后可以在当前目录看可以执行文件`qemu-img`，在子目录` x86_64-softmm`看到`qemu-system-x86_64`可执行文件，在子目录`i386-softmmu`看到可执行文件`qemu-system-i386`。
 
 ### 安装
-
-虽然前面得到了 QMEU 相关的可执行文件，但是要使用起来不方便。
 
 ```shell
 $ sudo make install
 ```
-
-这样就把相应的可执行文件放到系统标准的程序目录下了。
 
 ### 验证一下
 
