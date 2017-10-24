@@ -92,7 +92,7 @@ QEMU 默认编译生成所有平台的版本，为了加快编译速度，这里
 
 ```shell
 #!/bin/sh
-./configure --target-list="arm-softmmu,i386-softmmu,x86_64-softmmu,arm-linux-user,i386-linux-user,x86_64-linux-user" --enable-debug --enable-sdl --enable-gtk --enable-vnc --enable-vnc-jpeg --enable-vnc-png --enable-kvm --enable-spice --enable-curl --enable-snappy --enable-tools
+./configure --target-list="arm-softmmu,i386-softmmu,x86_64-softmmu,arm-linux-user,i386-linux-user,x86_64-linux-user" --enable-debug --enable-sdl --enable-gtk --enable-vnc --enable-vnc-jpeg --enable-vnc-png --enable-kvm --enable-spice --enable-curl --enable-snappy --enable-tools --enable-curses
 ```
 
 >   --enable-sdl 是必须的，否则用生成的 QEMU 创建的虚拟机没有画面。启动虚拟机时只会显示一行
@@ -151,6 +151,8 @@ $ sudo apt install libgtk-3-dev
 $ sudo apt install libjpeg-turbo8-dev
 $ sudo apt install libcurl4-openssl-dev
 $ sudo apt install libspice-server-dev
+$ sudo apt install libncurses5-dev    # 这个不知道需不需要，和下面差不多，也是为了--enable-curses
+$ sudo apt install libncursesw5-dev   # 为了 --enable-curses
 ```
 
 ### 编译
