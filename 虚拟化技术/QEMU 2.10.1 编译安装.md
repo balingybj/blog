@@ -4,6 +4,40 @@
 
 本文记录了我在新安装的 Ubuntu 17.10 desktop 安装 QEMU 的过程。
 
+## 检测硬件是否支持虚拟化
+
+先检测我的这台电脑是否支持虚拟化
+
+```shell
+$ egrep -c '(vmx|svm)' /proc/cpuinfo  
+8
+```
+
+如果输出一个大于 0 的值则说明支持。如果输出 0 则说明你的电脑硬件不支持虚拟化。
+
+再检查 BIOS 中硬件虚拟化功能是否打开。如果打开了，Linux 系统都会加载 kvm 模块。所以我们检查该模块是否加载
+
+```shell
+$ lsmod | grep kvm
+kvm_intel             200704  0
+kvm                   581632  1 kvm_intel
+irqbypass              16384  1 kvm
+```
+
+如果没有加载，手动加载试试：
+
+```shell
+sudo modprobe kvm_intel
+```
+
+如果加载失败，查看一下详细信息
+
+```shell
+$ dmesg | grep kvm
+```
+
+看看是不是主板里面的设置没打开。
+
 ## 源码包安装
 
 ###下载源码包
