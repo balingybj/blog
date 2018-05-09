@@ -30,7 +30,7 @@ https://download.docker.com/linux/static 目录下面有不同的版本，比如
 但是我发现这个下载过程特别慢，所以使用阿里的镜像源更快一些。
 
 ```shell
-$ wget https://download.docker.com/linux/static/stable/x86_64/docker-18.03.1-ce.tgz
+$ wget https://mirrors.aliyun.com/docker-ce/linux/static/stable/x86_64/docker-18.03.1-ce.tgz
 ```
 
 ## 提取出二进制文件
