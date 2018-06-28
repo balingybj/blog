@@ -2,7 +2,7 @@
 
 原本在 Ubuntu 上可以直接通过`apt install qemu-km`可以直接安装 QEMU，但是这样安装的版本太低。想用官方的最新版本还得自己编译源码安装。
 
-本文记录了我在新安装的 Ubuntu 17.10 desktop 安装 QEMU 的过程。
+本文记录了我在新安装的 Ubuntu 17.10 Desktop 安装 QEMU 的过程。
 
 ## 检测硬件是否支持虚拟化
 
@@ -40,7 +40,7 @@ $ dmesg | grep kvm
 
 ## 源码包安装
 
-###下载源码包
+### 下载源码包
 
 ```shell
 $ wget https://download.qemu.org/qemu-2.10.1.tar.xz
@@ -53,12 +53,6 @@ $ wget https://download.qemu.org/qemu-2.10.1.tar.xz
 ```shell
 $ sudo apt install gcc
 $ sudo apt install build-essential
-```
-
-我还安装了automake，不知需不需要。
-
-```shell
-$ sudo apt install automake
 ```
 
 ### 查看 QEMU 的编译信息
@@ -118,7 +112,7 @@ disabled with --disable-FEATURE, default is enabled if available:
 
 上面我只贴出了部分输出信息。我大致可以知道我们能指定要生成  QEMU 的平台版本，比如 x86 和 arm。还可以指定需要附加功能，其中比较重要的是 sdl、vnc。
 
-###配置编译选项
+### 配置编译选项
 
 QEMU 默认编译生成所有平台的版本，为了加快编译速度，这里我只选择了我可能会用到的版本。在`./configure`的`--target-list`的参数中指定。还选择了 sdl、vnc 的等附加功能。
 
@@ -126,7 +120,7 @@ QEMU 默认编译生成所有平台的版本，为了加快编译速度，这里
 
 ```shell
 #!/bin/sh
-./configure --target-list="arm-softmmu,i386-softmmu,x86_64-softmmu,arm-linux-user,i386-linux-user,x86_64-linux-user" --enable-debug --enable-sdl --enable-gtk --enable-vnc --enable-vnc-jpeg --enable-vnc-png --enable-kvm --enable-spice --enable-curl --enable-snappy --enable-tools --enable-curses
+./configure --target-list="x86_64-softmmu,i386-linux-user,x86_64-linux-user" --enable-debug --enable-sdl --enable-gtk --enable-vnc --enable-vnc-jpeg --enable-vnc-png --enable-kvm --enable-spice --enable-curl --enable-snappy --enable-tools --enable-curses --enable-docs
 ```
 
 >   --enable-sdl 是必须的，否则用生成的 QEMU 创建的虚拟机没有画面。启动虚拟机时只会显示一行
@@ -157,7 +151,7 @@ $ sudo chmod +x myconfig
 
 ```shell
 $ sudo ./myconfig
-target list       arm-softmmu i386-softmmu x86_64-softmmu arm-linux-user i386-linux-user x86_64-linux-user
+target list       x86_64-softmmu i386-linux-user x86_64-linux-user
 pixman            system
 SDL support       yes (2.0.6)
 GTK support       yes (3.22.24)
@@ -173,33 +167,33 @@ VNC PNG support   yes
 
 ### 安装编译依赖库
 
-这些库是根据前面的`configure`的配置参数，以及我后面运行`./configure`时缺失提示总结的。
+这些库是根据前面的`configure`的配置参数，以及我后面运行`./configure`时遇到的错误提示总结得到。这些库有点多，同样将它写入到一个脚本文件 install-deps 中。
+
+编辑脚步：
+
+```bash
+#!/bin/sh
+apt install -y pkg-config libpixman-1-dev libfdt-dev libsdl2-dev libsnappy-dev libgtk-3-dev libjpeg-turbo8-dev libcurl4-openssl-dev libspice-server-dev libncurses5-dev libncursesw5-dev texinfo
+```
+
+执行脚步
 
 ```shell
-$ sudo apt install -y pkg-config
-$ sudo apt install -y libpixman-1-dev
-$ sudo apt install -y libfdt-dev
-$ sudo apt install libsdl2-dev  # 这个是必须的，否则QEMU无法为虚拟机提供图形界面
-$ sudo apt install libsnappy-dev
-$ sudo apt install libgtk-3-dev
-$ sudo apt install libjpeg-turbo8-dev
-$ sudo apt install libcurl4-openssl-dev
-$ sudo apt install libspice-server-dev
-$ sudo apt install libncurses5-dev    # 这个不知道需不需要，和下面差不多，也是为了--enable-curses
-$ sudo apt install libncursesw5-dev   # 为了 --enable-curses
+$ chmod +x ./install-deps
+$ sudo ./install-deps
 ```
 
 ### 编译
 
 ```shell
-$ make -j8
+$ sudo make -j8
 ```
 
 由于我电脑是 8 核，所以用`-j8`加快编译。大概一分钟就编译好了。
 
 >   我前几天没有通过`configure`指定要生成的目标平台，也没有给`make`用`-j`参数。结果编译了二十多分钟。
 
-编译完后可以在当前目录看可以执行文件`qemu-img`，在子目录` x86_64-softmm`看到`qemu-system-x86_64`可执行文件，在子目录`i386-softmmu`看到可执行文件`qemu-system-i386`。
+编译完后可以在当前目录看可以执行文件`qemu-img`，在子目录` x86_64-softmm`看到`qemu-system-x86_64`可执行文件，在子目录`i386-linux-user` 看到可执行文件`qemu-i386`。
 
 ### 安装
 
@@ -210,12 +204,16 @@ $ sudo make install
 ### 验证一下
 
 ```shell
+$ qemu-system-x86_64 -version 
+QEMU emulator version 2.10.1
+Copyright (c) 2003-2017 Fabrice Bellard and the QEMU Project developers
+
 $ qemu-x86_64 --version
 qemu-x86_64 version 2.10.1
 Copyright (c) 2003-2017 Fabrice Bellard and the QEMU Project developers
 
-$ qemu-system-i386 --version
-QEMU emulator version 2.10.1
+$ qemu-i386 --version
+qemu-i386 version 2.10.1
 Copyright (c) 2003-2017 Fabrice Bellard and the QEMU Project developers
 
 1$ qemu-img --version
@@ -227,7 +225,7 @@ Copyright (c) 2003-2017 Fabrice Bellard and the QEMU Project developers
 
 这种方式我没试过，不知道能不能自动解决依赖问题。
 
-###clone 源码仓库
+### clone 源码仓库
 
 官方的 git 代码仓库
 
