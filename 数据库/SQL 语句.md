@@ -54,6 +54,36 @@ SHOW CREATE DATABASE database_name
 SHOW CREATE TABLE table_name
 ```
 
+## 创建数据库
+
+```mysql
+CREATE DATABASE base_name
+```
+
+## 删除数据库
+
+```mysql
+DROP DATABASE base_name
+```
+
+## 重命名表
+
+```mysql
+RENAME TABLE table_name TO new_name
+```
+
+或
+
+```mysql
+ALTER TABLE table_name RENAME [TO|AS] new_name
+```
+
+## 删除表
+
+```mysql
+DROP TABLE table_name
+```
+
 ## 查询数据
 
 数据查询使用 `SELECT` 语句。`SELECT` 语句用于在指定的表格中查询记录，并可以指定想要查询的字段。格式如下:
