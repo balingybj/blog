@@ -84,6 +84,67 @@ ALTER TABLE table_name RENAME [TO|AS] new_name
 DROP TABLE table_name
 ```
 
+## 添加新字段
+
+```mysql
+ALTER TABLE [表名] ADD COLUMN `字段名` [数据类型] [约束] COMMENT '注释'
+```
+
+## 删除字段
+
+```mysql
+ALTER TABLE [表名] DROP COLUMN [字段名]
+```
+
+## 修改字段名
+
+```mysql
+ALTER TABLE [表名] CHANGE [原字段名] [新字段名] [数据类型] [约束] COMMENT '注释'
+```
+
+## 修改字段类型
+
+```mysql
+ALTER TABLE [表名] MODIFY COLUMN [字段名] 类型
+```
+
+## 添加索引
+
+```mysql
+ALTER TABLE [表名] ADD [INDEX | UNIQUE | PRIMARY KEY | FULLTEXT] [索引名](索引字段列)
+```
+
+UNIQUE 表示唯一索引，PRIMARY KEY 表示主键索引，FULLTEXT 表示全文索引。
+
+## 删除索引名
+
+```mysql
+ALTER TABLE [表名] DROP INDEX [索引名]
+```
+
+## 删除 PRIMARY KEY
+
+```mysql
+ALTER TABLE [表名] DROP PRIMARY KEY
+```
+
+一个表只有一个 PRIMARY KEY，所以不需要知道主键名。
+
+## 修改索引名
+
+对于 MySQL 5.7 以下的版本，必须得先删除原索引，再添加新索引，以达到修改索引的目的。
+
+```mysql
+ALTER TABLE [表名] DROP INDEX [原索引名]
+ALTER TABLE [表名] ADD INDEX [新索引名](索引字段列)
+```
+
+对于 MySQL 5.7 及以上的版本
+
+```mysql
+ALTER TABLE [表名] RENAME INDEX [原索引名] TO [新索引名]
+```
+
 ## 查询数据
 
 数据查询使用 `SELECT` 语句。`SELECT` 语句用于在指定的表格中查询记录，并可以指定想要查询的字段。格式如下:
