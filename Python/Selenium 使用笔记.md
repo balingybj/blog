@@ -32,7 +32,7 @@ driver = webdriver.Chrome(executable_path="D:\Documents\Downloads\chromedriver.e
 
 执行 `webdriver.Chrome` 方法后，selenium 会通过 webdriver 打开一个Chrome 浏览器窗口。后面就可以控制浏览器模仿用户的操作了。
 
-![Selenium 通过 ChromeDriver 控制 Chrome 浏览器](./.images/Selenium 通过ChromeDriver 控制 Chrome 浏览器.png)
+![Selenium 通过 ChromeDriver 控制 Chrome 浏览器](./.images/Selenium通过ChromeDriver控制Chrome浏览器.png)
 
 Chrome 窗口上的提示：“Chrome 正受到自动测试软件的控制” 表示我们已经连上浏览器了。
 
@@ -91,7 +91,7 @@ button.click()
 
 通过前面的方式直接用 selenium 驱动 webdriver 启动浏览器，会被浏览器感知到。如下图所示：
 
-![Selenium 通过 ChromeDriver 控制 Chrome 浏览器](./.images/Selenium 通过ChromeDriver 控制 Chrome 浏览器.png)
+![Selenium 通过 ChromeDriver 控制 Chrome 浏览器](./.images/Selenium通过ChromeDriver控制Chrome浏览器.png)
 
 这种情况下浏览器会有一些特殊环境变量值，有些网站正式通过前端页面的 js 脚本收集这些变量值来防爬。但是先用 `remote-debug` 的方式启动 chrome 浏览器，监听一个端口，然后再启动脚本连接到该端口就不会被感知到，也无法收集那些特殊的变量值。
 
