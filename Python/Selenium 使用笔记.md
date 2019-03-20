@@ -1,5 +1,7 @@
 # Selenium 使用笔记
 
+> 默认使用 Python3
+
 ## 安装
 
 PIP 安装 Selenium
@@ -87,7 +89,7 @@ button.click()
 
 如果 web 页面对鼠标轨迹进行了更复杂的判断，则我们移动鼠标的轨迹更细致才能绕过检测。
 
-## 通过 remote-debugging 控制浏览器
+## 通过 remote-debugging 模式控制浏览器
 
 通过前面的方式直接用 selenium 驱动 webdriver 启动浏览器，会被浏览器感知到。如下图所示：
 
@@ -95,19 +97,32 @@ button.click()
 
 这种情况下浏览器会有一些特殊环境变量值，有些网站正式通过前端页面的 js 脚本收集这些变量值来防爬。但是先用 `remote-debug` 的方式启动 chrome 浏览器，监听一个端口，然后再启动脚本连接到该端口就不会被感知到，也无法收集那些特殊的变量值。
 
-先启动 chome
+### 1. 先启动 chome
+
+**Windows 下启动**
+
+将 Chrome 的安装目录（chrome.exe所在的目录）加入到系统环境变量中。创建一个空目录 `web_driver_test`。然后执行如下命令：
 
 ```shell
 chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\Documents\python_code\web_driver_test"
 ```
 
-再启动脚本，不过脚本要做如下修改。
+`--remote-debugging-port` 表示本地监听的端口，`--user-data-dir` 表示运行过程中保存数据的地方，否则产生的数据将保存在当前目录。如果你未将 Chrome 的目录加入到系统环境变量中，则需要指定 chrome.exe 的完整路径。
+
+**Mac 下启动**
+
+```shell
+/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary --remote-debugging-port=9222 http://localhost:9222 http://chromium.org
+```
+
+Mac 下比 Windows 多了一个默认的网址参数。由于 Mac 的文件系统有权限控制，所以最好用 `--user-data-dir`  指定一个你 有权限的目录，或者确保你有当前目录的文件写入权限。
+
+### 2. 再启动 Python 脚本，不过脚本要做如下修改。
 
 ```python
 chrome_options = Options()
 chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
 
 driver = webdriver.Chrome(chrome_options=chrome_options, executable_path="D:\Documents\Downloads\chromedriver.exe")
-
 ```
 
