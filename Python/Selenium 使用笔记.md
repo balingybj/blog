@@ -111,11 +111,13 @@ chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\Documents\python_cod
 
 **Mac 下启动**
 
+Mac 下的启动和 Windows 下类似，但启动命令最后需要添加一个默认的网址参数。
+
 ```shell
 /Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary --remote-debugging-port=9222 http://localhost:9222 http://chromium.org
 ```
 
-Mac 下比 Windows 多了一个默认的网址参数。由于 Mac 的文件系统有权限控制，所以最好用 `--user-data-dir`  指定一个你 有权限的目录，或者确保你有当前目录的文件写入权限。
+由于 Mac 的文件系统有权限控制，所以最好用 `--user-data-dir`  指定一个你 有权限的目录，或者确保你有当前目录的文件写入权限。
 
 ### 2. 启动 Python 脚本，不过脚本要做如下修改。
 
