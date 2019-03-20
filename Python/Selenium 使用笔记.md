@@ -119,12 +119,21 @@ Mac 下的启动和 Windows 下类似，但启动命令最后需要添加一个�
 
 由于 Mac 的文件系统有权限控制，所以最好用 `--user-data-dir`  指定一个你 有权限的目录，或者确保你有当前目录的文件写入权限。
 
-### 2. 启动 Python 脚本，不过脚本要做如下修改。
+### 2. 修改 Python 脚本
+
+创建 webdriver 示例时需要指定额外的参数 `debuggerAddress`，值为前面启动 Chrome 时指定的 `--remote-debugging-port` 。
 
 ```python
 chrome_options = Options()
 chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
 
 driver = webdriver.Chrome(chrome_options=chrome_options, executable_path="D:\Documents\Downloads\chromedriver.exe")
+# 后续代码省略
+```
+
+### 3. 启动 Python 脚本
+
+```shell
+python test.py
 ```
 
