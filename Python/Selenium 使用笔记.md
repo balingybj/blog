@@ -97,7 +97,7 @@ button.click()
 
 这种情况下浏览器会有一些特殊环境变量值，有些网站正式通过前端页面的 js 脚本收集这些变量值来防爬。但是先用 `remote-debug` 的方式启动 chrome 浏览器，监听一个端口，然后再启动脚本连接到该端口就不会被感知到，也无法收集那些特殊的变量值。
 
-### 1. 先启动 chome
+### 1. 通过命令行启动 Chrome 浏览器
 
 **Windows 下启动**
 
@@ -117,7 +117,7 @@ chrome.exe --remote-debugging-port=9222 --user-data-dir="D:\Documents\python_cod
 
 Mac 下比 Windows 多了一个默认的网址参数。由于 Mac 的文件系统有权限控制，所以最好用 `--user-data-dir`  指定一个你 有权限的目录，或者确保你有当前目录的文件写入权限。
 
-### 2. 再启动 Python 脚本，不过脚本要做如下修改。
+### 2. 启动 Python 脚本，不过脚本要做如下修改。
 
 ```python
 chrome_options = Options()
