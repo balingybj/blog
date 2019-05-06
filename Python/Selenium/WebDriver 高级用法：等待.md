@@ -1,8 +1,8 @@
-# WebDriver 高级用法
+# WebDriver 高级用法：等待
 
 ---
 
-## 显示或隐式的等待
+## 等待
 
 ---
 
@@ -60,6 +60,8 @@ myDynamicElement = ff.find_element_by_id("myDynamicElement")
 ```
 
  上面的例子中，将 WebDriver 查找元素时轮询等待的时间上限设为 10 秒。后续如果查找一个暂时不存在的元素时会最多轮询10秒。
+
+
 
 
 
