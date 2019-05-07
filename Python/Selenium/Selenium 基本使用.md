@@ -188,9 +188,26 @@ element.text
 
 `element.text` 只会返回在 web 页面上可见的文本值。
 
-## 填写表单
+## 输入
 
-等到有具体例子再写
+### 文本输入
+
+HTML 的 `input` 标签和 `textarea` 标签可以定义文本输入控件。在模拟用户输入文本时，需要先找到对应的 web 元素，然后在元素上调用 `send_keys` 方法就行。比如下面的例子先找到用户名和密码输入框，然后调用 `send_keys` 模拟用户输入文本。
+
+```python
+browser = webdriver.Chrome()
+browser.get(url='https://weibo.cn/')
+username_input = browser.find_element_by_id('loginName')
+password_input = browser.find_element_by_id('loginPassword')
+username_input.send_keys('xxx')
+password_input.send_keys('passwd')
+```
+
+### 单选框和复选框
+
+### 下拉列表选择
+
+### 表单提交
 
 ## 在窗口和 Frames 之间移动
 
