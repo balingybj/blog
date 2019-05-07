@@ -1,11 +1,11 @@
 ## 创建一个浏览器驱动实例
 
 ```python
-from selenium import webdriver
+from selenium import webbrowser
 # Chrome 浏览器
-browser = webdriver.Chrome()
+browser = webbrowser.Chrome()
 # 火狐 浏览器
-browser = webdriver.Firefox()
+browser = webbrowser.Firefox()
 ```
 
 ## 请求一个页面
@@ -35,7 +35,7 @@ print(browser.title)
 ```python
 element = browser.find_element_by_id("loginName")
 # 或者
-from selenium.webdriver.common.by import By
+from selenium.webbrowser.common.by import By
 element = browser.find_element(by=By.ID, value="loginName")
 ```
 
@@ -44,10 +44,10 @@ element = browser.find_element(by=By.ID, value="loginName")
 查找所有 class 为 apple 的元素。
 
 ```pyt
-apples = driver.find_elements_by_class_name("apple")
+apples = browser.find_elements_by_class_name("apple")
 # 或者
-from selenium.webdriver.common.by import By
-apples = driver.find_elements(By.CLASS_NAME, "apple")
+from selenium.webbrowser.common.by import By
+apples = browser.find_elements(By.CLASS_NAME, "apple")
 ```
 
 ### 通过标签名
@@ -55,10 +55,10 @@ apples = driver.find_elements(By.CLASS_NAME, "apple")
 比如查找所有标签名为 table 的元素。
 
 ```python
-table = driver.find_element_by_tag_name("table")
+table = browser.find_element_by_tag_name("table")
 # 或者
-from selenium.webdriver.common.by import By
-table = driver.find_element(By.TAG_NAME, "table")
+from selenium.webbrowser.common.by import By
+table = browser.find_element(By.TAG_NAME, "table")
 ```
 
 ### 通过 name 属性查找输入元素
@@ -72,10 +72,10 @@ table = driver.find_element(By.TAG_NAME, "table")
 则可以通过其 name 属性值定位到它：
 
 ```python
-phone = driver.find_element_by_name("phoneNo")
+phone = browser.find_element_by_name("phoneNo")
 # 或者
-from selenium.webdriver.common.by import By
-phone = driver.find_element(By.NAME, "phoneNo")
+from selenium.webbrowser.common.by import By
+phone = browser.find_element(By.NAME, "phoneNo")
 ```
 
 ### 通过链接文本
@@ -89,10 +89,10 @@ phone = driver.find_element(By.NAME, "phoneNo")
 可以通过文本“登陆”来查找该元素：
 
 ```python
-login = driver.find_element_by_link_text("登陆")
+login = browser.find_element_by_link_text("登陆")
 # 或者
-from selenium.webdriver.common.by import By
-login = driver.find_element(By.LINK_TEXT, "登陆")
+from selenium.webbrowser.common.by import By
+login = browser.find_element(By.LINK_TEXT, "登陆")
 ```
 
 ### 通过部分链接文本
@@ -109,10 +109,10 @@ login = driver.find_element(By.LINK_TEXT, "登陆")
 可以通过文本“搜索”来查找它们：
 
 ```python
-search = driver.find_element_by_partial_link_text("搜索")
+search = browser.find_element_by_partial_link_text("搜索")
 # 或者
-from selenium.webdriver.common.by import By
-search = driver.find_element(By.PARTIAL_LINK_TEXT, "搜索")
+from selenium.webbrowser.common.by import By
+search = browser.find_element(By.PARTIAL_LINK_TEXT, "搜索")
 ```
 
 ### 通过 CSS 选择器
@@ -122,9 +122,9 @@ search = driver.find_element(By.PARTIAL_LINK_TEXT, "搜索")
 查找 div 元素的子元素中 href 属性包含 “passport.weibo.cn/signin/login” 的 a 元素：
 
 ```python
-login = driver.find_element_by_css_selector('div > a[href*="passport.weibo.cn/signin/login"]')
+login = browser.find_element_by_css_selector('div > a[href*="passport.weibo.cn/signin/login"]')
 # 或者
-login = driver.find_element(By.CSS_SELECTOR, 'div > a[href*="passport.weibo.cn/signin/login"]')
+login = browser.find_element(By.CSS_SELECTOR, 'div > a[href*="passport.weibo.cn/signin/login"]')
 ```
 
 ### 通过  XPath 表达式
@@ -133,9 +133,9 @@ login = driver.find_element(By.CSS_SELECTOR, 'div > a[href*="passport.weibo.cn/s
 
 | 驱动                                                         | 标签和属性名 | 属性值       | 是否有元素的 XPath 支持 |
 | ------------------------------------------------------------ | ------------ | ------------ | ----------------------- |
-| [HtmlUnit Driver](https://www.seleniumhq.org/docs/03_webdriver.jsp#htmlunit-driver) | 小写         | 同 HTML 代码 | 是                      |
-| [Internet Explorer Driver](https://www.seleniumhq.org/docs/03_webdriver.jsp#internet-explorer-driver) | 小写         | 同 HTML 代码 | 否                      |
-| [Firefox Driver](https://www.seleniumhq.org/docs/03_webdriver.jsp#firefox-driver) | 不区分大小写 | 同 HTML 代码 | 是                      |
+| [HtmlUnit browser](https://www.seleniumhq.org/docs/03_webbrowser.jsp#htmlunit-browser) | 小写         | 同 HTML 代码 | 是                      |
+| [Internet Explorer browser](https://www.seleniumhq.org/docs/03_webbrowser.jsp#internet-explorer-browser) | 小写         | 同 HTML 代码 | 否                      |
+| [Firefox browser](https://www.seleniumhq.org/docs/03_webbrowser.jsp#firefox-browser) | 不区分大小写 | 同 HTML 代码 | 是                      |
 
 例子，假设有如下 HTML：
 
@@ -147,15 +147,15 @@ login = driver.find_element(By.CSS_SELECTOR, 'div > a[href*="passport.weibo.cn/s
 对于不同的浏览器驱动，执行如下同一份代码：
 
 ```python
-inputs = driver.find_elements_by_xpath("//input")
+inputs = browser.find_elements_by_xpath("//input")
 # 或者
-from selenium.webdriver.common.by import By
-inputs = driver.find_elements(By.XPATH, "//input")
+from selenium.webbrowser.common.by import By
+inputs = browser.find_elements(By.XPATH, "//input")
 ```
 
 各个浏览器驱动匹配到的结果如下：
 
-| XPath 表达式 | [HtmlUnit Driver](https://www.seleniumhq.org/docs/03_webdriver.jsp#htmlunit-driver) | [Firefox Driver](https://www.seleniumhq.org/docs/03_webdriver.jsp#firefox-driver) | [Internet Explorer Driver](https://www.seleniumhq.org/docs/03_webdriver.jsp#internet-explorer-driver) |
+| XPath 表达式 | [HtmlUnit browser](https://www.seleniumhq.org/docs/03_webbrowser.jsp#htmlunit-browser) | [Firefox browser](https://www.seleniumhq.org/docs/03_webbrowser.jsp#firefox-browser) | [Internet Explorer browser](https://www.seleniumhq.org/docs/03_webbrowser.jsp#internet-explorer-browser) |
 | ------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | //input      | 1                                                            | 2                                                            | 2                                                            |
 | //INPUT      | 0                                                            | 2                                                            | 0                                                            |
@@ -167,14 +167,14 @@ inputs = driver.find_elements(By.XPATH, "//input")
 查找第一个 class=“chesse” 的元素
 
 ```python
-element = driver.execute_script("return $('.cheese')[0]")
+element = browser.execute_script("return $('.cheese')[0]")
 ```
 
 查找所有 label 元素的 input 子元素：
 
 ```python
-abels = driver.find_elements_by_tag_name("label")
-inputs = driver.execute_script(
+abels = browser.find_elements_by_tag_name("label")
+inputs = browser.execute_script(
     "var labels = arguments[0], inputs = []; for (var i=0; i < labels.length; i++){" +
     "inputs.push(document.getElementById(labels[i].getAttribute('for'))); } return inputs;", labels)
 ```
@@ -182,7 +182,7 @@ inputs = driver.execute_script(
 ## 获取文本值
 
 ```python
-element = driver.find_element_by_id("element_id")
+element = browser.find_element_by_id("element_id")
 element.text
 ```
 
@@ -206,23 +206,23 @@ element.text
 
 ```python
 # 请求一个页面
-driver.get("http://www.example.com")
+browser.get("http://www.example.com")
 
 # 设置 cookie，这里的的 cookie 名为 'key'，cookie 值为 'value'
-driver.add_cookie({'name':'key', 'value':'value', 'path':'/'})
+browser.add_cookie({'name':'key', 'value':'value', 'path':'/'})
 # 其他可选参数包括:
 # 'domain' -> String,
 # 'secure' -> Boolean,
 # 'expiry' -> 过期时间，毫秒。Milliseconds since the Epoch it should expire.
 
 # 获取当前页面所有 cookie
-for cookie in driver.get_cookies():
+for cookie in browser.get_cookies():
     print(cookie['name'], cookie['value'])
 
 # 删除指定 cookie
-driver.delete_cookie("CookieName")
+browser.delete_cookie("CookieName")
 # 删除所有 cookie
-driver.delete_all_cookies()
+browser.delete_all_cookies()
 ```
 
 我们可以使用 Selenium 去掉浏览器模拟登陆某个网站，获取到 cookie 后给爬虫程序使用。
@@ -232,9 +232,9 @@ driver.delete_all_cookies()
 火狐浏览器
 
 ```python
-profile = webdriver.FirefoxProfile()
+profile = webbrowser.FirefoxProfile()
 profile.set_preference("general.useragent.override", "some UA string")
-driver = webdriver.Firefox(profile)
+browser = webbrowser.Firefox(profile)
 ```
 
 ## 拖放
@@ -246,9 +246,9 @@ driver = webdriver.Firefox(profile)
 > todo:弄清楚 selenium 中的 event 是什么
 
 ```python
-from selenium.webdriver.common.action_chains import ActionChains
-element = driver.find_element_by_name("source")
-target =  driver.find_element_by_name("target")
-ActionChains(driver).drag_and_drop(element, target).perform()
+from selenium.webbrowser.common.action_chains import ActionChains
+element = browser.find_element_by_name("source")
+target =  browser.find_element_by_name("target")
+ActionChains(browser).drag_and_drop(element, target).perform()
 ```
 
