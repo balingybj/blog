@@ -50,7 +50,7 @@ public void onReceive(Context context, Intent intent) {
 
 ### WAP_PUSH_DELIVER_ACTION
 
-广播动作：一条心的 WAP PUSH 消息到达设备。对应的 intent 只会发送给默认的 sms app。该 app 负责编写消息并通知用户。对应的 intent 将附带一下额外数据：
+广播动作：一条新的 WAP PUSH 消息到达设备。对应的 intent 只会发送给默认的 sms app。该 app 负责编写消息并通知用户。对应的 intent 将附带一下额外数据：
 
 - “transactionId” - (Integer) WAP 事务 ID
 
@@ -73,3 +73,10 @@ public void onReceive(Context context, Intent intent) {
 键值为 'unassigned/0x...' 形式的键表示未分配参数。其中 "..." 为未分配参数的十六进制表示。如果一个参数没有值，它在 map 中的值为 null。
 
 本条广播的常量值为："android.provider.Telephony.WAP_PUSH_RECEIVED" 
+
+## 两种接收短信的intent的区别
+
+```xml
+<action android:name="android.provider.Telephony.SMS_RECEIVED" />
+```
+
