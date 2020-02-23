@@ -30,7 +30,49 @@ $ pip install mysqlclient
 
 ## 纯 Python 实现的 PyMySQL
 
+PyMySQL 是纯 Python 代码实现的 Python binding。纯 Python 代码实现的包有个好处就是安装简单，任何支持 Python 的平台都能直接安装，不会出现兼容性问题。mysqlclient 和 MySQLdb 就是因为依赖了 C 库，才导致安装的时候麻烦，特别是在 Windows 上容易出现编译问题。
 
+PyMySQL 支持 Python 2.7 和 Python 3.5 及以上版本。支持的 MySQL  5.5 及以上版本。
 
+安装 
 
+```shell
+pip install pymysql
+```
 
+## MySQL 官方出品的 mysql-connector-python
+
+这个强烈推荐。mysql-connector-python 由 MySQL 官方出品，有专门的维护团队，能紧跟 MySQL 更新。而且 8.0 版本由纯 Python 代码实现，在各个平台安装都很丝滑。
+
+mysql-connector-python 、Python、MySQL 之间的版本对应关系：
+
+| mysql-connector-python 版本 | MySQL 版本                    | Python 版本                  | 状态                     |
+| --------------------------- | ----------------------------- | ---------------------------- | ------------------------ |
+| 8.0                         | 8.0, 5.7, 5.6, 5.5            | 3.8, 3.7, 3.6, 3.5, 3.4, 2.7 | 一般可用                 |
+| 2.2                         | 5.7, 5.6, 5.5                 | 3.5, 3.4, 2.7                | 里程碑版本，还未正式发布 |
+| 2.1                         | 5.7, 5.6, 5.5                 | 3.5, 3.4, 2.7, 2.6           | 一般可用                 |
+| 2.0                         | 5.7, 5.6, 5.5                 | 3.5, 3.4, 2.7, 2.6           | 一般可用，已停止更新     |
+| 1.2                         | 5.7, 5.6, 5.5 (5.1, 5.0, 4.1) | 3.4, 3.3, 3.2, 3.1, 2.7, 2.6 | 一般可用，已停止更新     |
+
+一般可用就表示可用于生产环境了。现在主流的 Python 版本已经是 3.x 了。主流的 MySQL 版本是 5.7 和 5.6。所以一般直接选 mysql-connector-python 8 就行。如果你必须得使用 Python 2.7，可以选择 mysql-connector-python  2.1 或 2.2。
+
+安装 mysql-connector-python 8
+
+```shell
+pip install mysql-connector-python
+```
+
+验证
+
+```shell
+shell> python
+>>> from distutils.sysconfig import get_python_lib
+>>> print(get_python_lib())
+C:\Users\xxx\AppData\Local\Programs\Python\Python38\Lib\site-packages
+```
+
+注意，8.0 之前的版本并不是纯 Python 实现，在 Windows 平台安装可能会有点麻烦。如果要安装 8.0 之前的版本，请按照[官方文档](https://dev.mysql.com/doc/connector-python/en/connector-python-installation.html) 的指示选择使用二进制包安装或者源码编译安装。
+
+## ORM 框架 SQLAlchemy
+
+虽然
