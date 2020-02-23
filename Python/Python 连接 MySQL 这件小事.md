@@ -22,10 +22,6 @@ $ pip install mysqlclient
 
 连接数据库
 
-```python
-
-```
-
 还是不建议使用 mysqlclient
 
 ## 纯 Python 实现的 PyMySQL
@@ -75,4 +71,36 @@ C:\Users\xxx\AppData\Local\Programs\Python\Python38\Lib\site-packages
 
 ## ORM 框架 SQLAlchemy
 
-虽然
+ORM 是比数据库的语言绑定更先进的工具，直接用 PyMySQL 和 mysql-connector-python 这类 Python binding，你需要手动拼接 SQL 语句，而使用 ORM 框架，你可以只关注 Python 对象，写出的代码更具可读性，而且可以避免很多手写 SQL 的坑。我当初头铁，偏要在实际项目中手动拼接 SQL 语句，结果踩了很多坑，最后修修补补，我发现我实际上在实现一个玩具版的 ORM 框架，最后老老实实换了 SQLAlchemy。
+
+Python 的 ORM 框架有好几个，但考虑到功能齐全，社区活跃度，更新频率，用户数，我只推荐 SQLAlchemy。另外，Djanjo 也比较流行，如果你熟悉 Djanjo，可以把 Djanjo 的 ORM 模块拆出来用。
+
+安装：
+
+```shell
+pip install sqlalchemy
+```
+
+不过 SQLAlchemy 本身并不没有提供访问数据库的功能，也需要通过 Python binding 来访问数据。所以安装  SQLAlchemy 后，你还需要安装前面介绍的 PyMySQL 或 mysql-connector-python。
+
+连接数据库：
+
+SQLAlchemy + PyMySQL 
+
+```python
+engine = create_engine("mysql+pymsql://{user}:{password}@{host}:{port}/{db}?charset=utf8".format(user='chao', password='123456', host='192.168.3.131', port=3306, db='test'),echo=True)
+```
+
+SQLAlchemy + mysql-connector-python
+
+```python
+engine = create_engine("mysql+mysqlconnector://{user}:{password}@{host}:{port}/{db}?charset=utf8".format(user='chao', password='123456', host='192.168.3.131', port=3306, db='test'),echo=True)
+```
+
+SQLAlchemy + mysqlclient（或 MySQLdb）
+
+```python
+# 虽然不再建议使用 mysqlclient 或 MySQLdb，但为了完整性，还是列出来
+engine = create_engine("mysql+mysqldb://{user}:{password}@{host}:{port}/{db}?charset=utf8".format(user='chao', password='123456', host='192.168.3.131', port=3306, db='test'),echo=True)
+```
+
