@@ -104,3 +104,81 @@ SQLAlchemy + mysqlclient（或 MySQLdb）
 engine = create_engine("mysql+mysqldb://{user}:{password}@{host}:{port}/{db}?charset=utf8".format(user='chao', password='123456', host='192.168.3.131', port=3306, db='test'),echo=True)
 ```
 
+## Python DB-API 2
+
+Python Database API Specification version 2.0 （后面简称 DB-API 2）定义各个实现关系型数据库的 Python 包需要遵守的规范。Mysqlclient、PyMySQL、mysql-connector-python 都遵守 DB-API 2 规范。
+
+DB-API 2 规定了 Python binding 必须提供以下模块、接口、对象。
+
+### 模块接口
+
+### 构建器
+
+```python
+connect(parm...)
+```
+
+构建一个到数据库的连接，返回 `Conection` 对象。
+
+### 全局对象
+
+#### `apilevel`
+
+字符串常量，表示支持的 DB API 等级。目前 mysql-connector-python、mysqlclient、PyMySQL 都支持 2.0
+
+```python
+>>> import mysql.connector
+>>> mysql.connector.apilevel
+'2.0'
+>>> import pymysql
+>>> pymysql.apilevel
+'2.0'
+>>> import MySQLdb
+>>> MySQLdb.apilevel
+'2.0'
+```
+
+#### `threadsafety`
+
+整数常量，表示支持的线程安全级别。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
